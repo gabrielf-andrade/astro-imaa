@@ -13,6 +13,7 @@ interface Props {
   className?: string;
   sizes?: string;
   loading?: "lazy" | "eager";
+  style?: React.CSSProperties;
 }
 
 export default function SanityImage({
@@ -23,19 +24,25 @@ export default function SanityImage({
   className,
   sizes,
   loading = "lazy",
+  style,
 }: Readonly<Props>) {
-  if (!SANITY_PROJECT_ID || !SANITY_DATASET) {
-    throw new Error("SanityImage: PUBLIC_SANITY_PROJECT_ID and PUBLIC_SANITY_DATASET must be set.");
+  if (!SANITY_PROJECT_ID || !SANITY_DATASET || !image?.asset?._id) {
+    if (import.meta.env.DEV && (!SANITY_PROJECT_ID || !SANITY_DATASET)) {
+      console.warn("SanityImage: Variáveis de ambiente não configuradas.");
+    }
+    if (import.meta.env.DEV && !image?.asset?._id) {
+      console.warn("SanityImage: image.asset._id não configurado ou inválido.");
+    }
+    return null;
   }
-  if (!image?.asset?._id) return null;
 
   return (
     <LibSanityImage
       id={image.asset._id}
       projectId={SANITY_PROJECT_ID}
       dataset={SANITY_DATASET}
-      hotspot={image.hotspot || undefined}
-      crop={image.crop || undefined}
+      hotspot={image.hotspot as { x: number; y: number } | undefined}
+      crop={image.crop as { top: number; bottom: number; left: number; right: number } | undefined}
       preview={image.asset.metadata?.lqip || undefined}
       width={width}
       height={height}
@@ -44,11 +51,7 @@ export default function SanityImage({
       sizes={sizes || "(max-width: 800px) 100vw, 800px"}
       loading={loading}
       mode={width && height ? "cover" : "contain"}
-      style={{
-        width: "100%",
-        height: "auto",
-        display: "block",
-      }}
+      style={style}
     />
   );
 }
