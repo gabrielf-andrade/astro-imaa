@@ -1,0 +1,28 @@
+---
+import { cn } from "@/lib/utils/ui-utils";
+
+interface Props {
+  py?: "none" | "sm" | "md" | "lg";
+  bg?: "default" | "muted" | "none";
+  class?: string;
+}
+
+const pyMap = {
+  none: "",
+  sm: "py-8",
+  md: "py-12",
+  lg: "py-16",
+};
+
+const bgMap = {
+  default: "bg-background",
+  muted: "bg-muted",
+  none: "",
+};
+
+const { py = "none", bg = "none", class: className } = Astro.props;
+---
+
+<section class={cn(pyMap[py], bgMap[bg], className)}>
+  <slot />
+</section>
