@@ -1,0 +1,44 @@
+---
+import Container from "@/components/layout/Container.astro";
+import PageSection from "@/components/layout/PageSection.astro";
+import { cn } from "@/lib/utils/ui-utils";
+
+interface Props {
+  heading: string;
+  tagline?: string | null;
+  class?: string;
+}
+
+const { heading, tagline, class: className } = Astro.props;
+---
+
+<PageSection py="md" class={cn("bg-background text-foreground", className)}>
+  <Container size="md">
+    <h1 class="text-3xl md:text-5xl font-black mb-3 text-pretty tracking-wider">{heading}</h1>
+    {tagline && <p class="text-foreground/80 font-sans text-sm max-w-2xl text-pretty mb-3">{tagline}</p>}
+    <div class="h-1.5 w-20 rounded-sm bg-accent origin-left animate-accent-bar"></div>
+  </Container>
+</PageSection>
+
+<style>
+  @keyframes accent-bar {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  .animate-accent-bar {
+    animation: accent-bar 0.3s ease-out forwards;
+    animation-delay: 0.1s;
+    transform: scaleX(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-accent-bar {
+      animation: none;
+      transform: scaleX(1);
+    }
+  }
+</style>
