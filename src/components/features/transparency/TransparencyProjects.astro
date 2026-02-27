@@ -1,0 +1,46 @@
+---
+import DocumentItem from "@/components/common/DocumentItem.astro";
+import TransparencyProjectStatusBadge from "@/components/features/transparency/TransparencyProjectStatusBadge";
+import type { ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT } from "@/lib/sanity.types";
+
+type Project = NonNullable<NonNullable<ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT>[number]["projects"]>[number];
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+---
+
+<div>
+  <h2 class="text-xl font-bold text-foreground mb-6">Projetos em Andamento</h2>
+  <div class="space-y-6">
+    {
+      projects.map((project) => {
+        const validDocs = project.documents?.filter((doc) => doc.fileUrl) ?? [];
+        return (
+          <div class="rounded-2xl border border-border overflow-hidden shadow-sm">
+            <div class="px-6 py-4 bg-muted flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <h3 class="font-bold text-foreground">{project.title}</h3>
+                {project.origin && <p class="text-sm text-muted-foreground font-sans mt-0.5">{project.origin}</p>}
+              </div>
+              <div class="flex flex-wrap items-center gap-3">
+                {project.value && <span class="text-sm font-bold text-primary font-sans">{project.value}</span>}
+                <TransparencyProjectStatusBadge status={project.status} client:load />
+              </div>
+            </div>
+
+            {validDocs.length > 0 && (
+              <div class="px-6 py-4 divide-y divide-border">
+                {validDocs.map((doc) => (
+                  <DocumentItem doc={doc} wrapperClass="flex items-center justify-between gap-4 py-3" />
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })
+    }
+  </div>
+</div>

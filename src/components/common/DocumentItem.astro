@@ -1,0 +1,45 @@
+---
+import { Download, FileText } from "lucide-react";
+
+interface QueryDocItem {
+  _key: string;
+  title: string | null;
+  label: string | null;
+  fileUrl: string | null;
+  fileName: string | null;
+}
+
+interface Props {
+  doc: QueryDocItem;
+  wrapperClass?: string;
+}
+
+const { doc, wrapperClass = "flex items-center justify-between gap-4 px-6 py-4" } = Astro.props;
+const displayName = doc.title || doc.label || doc.fileName || "Documento";
+---
+
+<div class={wrapperClass}>
+  <div class="flex items-center gap-2 min-w-0">
+    <FileText className="w-4 h-4 text-primary shrink-0" />
+    <div class="min-w-0">
+      <p class="text-sm font-medium text-foreground font-sans text-pretty">
+        {displayName}
+      </p>
+      {doc.label && doc.title && <p class="text-xs text-muted-foreground font-sans">{doc.label}</p>}
+    </div>
+  </div>
+  {
+    doc.fileUrl && (
+      <a
+        href={doc.fileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Baixar ${displayName.toLowerCase()} (abre em nova aba)`}
+        class="inline-flex items-center gap-1.5 border border-primary text-primary hover:bg-primary hover:text-white text-xs font-medium font-sans px-3 py-1.5 rounded-md transition-colors shrink-0"
+      >
+        <Download className="w-3.5 h-3.5" />
+        Baixar
+      </a>
+    )
+  }
+</div>

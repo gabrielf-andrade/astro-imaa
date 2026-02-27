@@ -1,0 +1,88 @@
+---
+import PortableTextRenderer from "@/components/common/PortableTextRenderer.astro";
+import TransparencyDocuments from "@/components/features/transparency/TransparencyDocuments.astro";
+import TransparencyProjects from "@/components/features/transparency/TransparencyProjects.astro";
+import Container from "@/components/layout/Container.astro";
+import PageSection from "@/components/layout/PageSection.astro";
+import PageHero from "@/components/sections/PageHero.astro";
+import BackLink from "@/components/ui/BackLink.astro";
+import Layout from "@/layouts/Layout.astro";
+import { loadQuery } from "@/lib/load-query";
+import { ALL_TRANSPARENCY_SECTIONS_QUERY } from "@/lib/queries/transparency";
+import type { ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT } from "@/lib/sanity.types";
+import { truncateExcerpt } from "@/lib/utils/string-utils";
+import { cn } from "@/lib/utils/ui-utils";
+import type { GetStaticPaths } from "astro";
+import { FileText } from "lucide-react";
+
+export const getStaticPaths = (async () => {
+  const { data: sections } = await loadQuery<ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT>({
+    query: ALL_TRANSPARENCY_SECTIONS_QUERY,
+  });
+
+  return (sections ?? [])
+    .filter((section) => section.slug != null)
+    .map((section) => ({
+      params: { slug: section.slug! },
+      props: { section },
+    }));
+}) satisfies GetStaticPaths;
+
+const { section } = Astro.props;
+
+if (!section) return Astro.redirect("/transparencia");
+
+const hasDescription = (section.description?.length ?? 0) > 0;
+const hasProjects = (section.projects?.length ?? 0) > 0;
+const hasDocuments = section.documents?.some((d) => d.fileUrl) ?? false;
+const hasContent = hasProjects || hasDocuments;
+---
+
+<Layout
+  title={section.partner ?? section.title ?? "Transparência"}
+  description={truncateExcerpt(section.excerpt ?? section.autoExcerpt)}
+>
+  <PageHero heading={section.hero?.tagline ?? section.title ?? ""} tagline={section.partner ?? ""} />
+
+  {
+    hasDescription && (
+      <PageSection bg="muted" py="md">
+        <Container size="md">
+          <PortableTextRenderer value={section.description} class="prose-p:text-muted-foreground" />
+        </Container>
+      </PageSection>
+    )
+  }
+  <PageSection>
+    <Container size="lg" class="pb-12">
+      {
+        hasProjects && (
+          <div class={cn("mb-12", hasDescription && "pt-12")}>
+            <TransparencyProjects projects={section.projects!} />
+          </div>
+        )
+      }
+
+      {
+        hasDocuments && (
+          <div class={cn("mb-12", (hasProjects || hasDescription) && "pt-12", hasProjects && "border-t border-border")}>
+            <TransparencyDocuments documents={section.documents!} />
+          </div>
+        )
+      }
+
+      {
+        !hasContent && (
+          <div class="text-center py-12 text-muted-foreground font-sans mb-12">
+            <FileText className="w-10 h-10 mx-auto mb-3 opacity-30" />
+            <p>Nenhum documento publicado ainda.</p>
+          </div>
+        )
+      }
+
+      <div class="pt-12 border-t border-border">
+        <BackLink href="/transparencia" label="Voltar ao Portal da Transparência" />
+      </div>
+    </Container>
+  </PageSection>
+</Layout>

@@ -1,0 +1,23 @@
+---
+import DocumentItem from "@/components/common/DocumentItem.astro";
+import type { ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT } from "@/lib/sanity.types";
+
+type Document = NonNullable<NonNullable<ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT>[number]["documents"]>[number];
+
+interface Props {
+  documents: Document[];
+}
+
+const { documents = [] } = Astro.props;
+---
+
+{
+  documents.some((doc) => doc.fileUrl) && (
+    <div>
+      <h2 class="text-xl font-bold text-foreground mb-6">Documentos Publicados</h2>
+      <div class="rounded-2xl border border-border overflow-hidden divide-y divide-border">
+        {documents.map((doc) => doc.fileUrl && <DocumentItem doc={doc} />)}
+      </div>
+    </div>
+  )
+}
