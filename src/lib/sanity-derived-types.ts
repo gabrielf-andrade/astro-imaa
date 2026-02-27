@@ -4,6 +4,7 @@
 
 import type {
   ALL_PAGES_QUERY_RESULT,
+  ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT,
   SanityImageCrop,
   SanityImageHotspot,
   SITE_SETTINGS_QUERY_RESULT,
@@ -75,3 +76,10 @@ export type QueryContactInfoKeys = keyof NonNullable<QueryContactInfo>;
 
 /** Data type for each contact info key */
 export type ContactInfoValue = NonNullable<QueryContactInfo>[QueryContactInfoKeys];
+
+// ============================================================================
+// Transparency Types - derived from TypeGen
+// ============================================================================
+export type TransparencyProjectStatus = NonNullable<
+  NonNullable<ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT>[number]["projects"]
+>[number]["status"];

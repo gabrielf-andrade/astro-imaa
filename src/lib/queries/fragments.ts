@@ -22,7 +22,6 @@ export const HERO_FRAGMENT = `
   hero {
     heading,
     tagline,
-    image { ${IMAGE_FRAGMENT} }
   }
 `;
 
@@ -80,10 +79,6 @@ export const BASE_PAGE_FRAGMENT = `
 export const PAGE_BUILDER_FRAGMENT = `
   _key,
   _type,
-  _type == "hero" => {
-    ...,
-    "image": image { ${IMAGE_FRAGMENT} }
-  },
   _type == "textWithIllustration" => {
     ...,
     "image": image { ${IMAGE_FRAGMENT} }
