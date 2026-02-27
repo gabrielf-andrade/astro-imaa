@@ -18,6 +18,14 @@ export const IMAGE_FRAGMENT = `
   }
 `;
 
+export const HERO_FRAGMENT = `
+  hero {
+    heading,
+    tagline,
+    image { ${IMAGE_FRAGMENT} }
+  }
+`;
+
 export const SLUG_FRAGMENT = `
   "slug": slug.current
 `;
@@ -86,21 +94,6 @@ export const PAGE_BUILDER_FRAGMENT = `
   },
   _type == "videoFile" => { ${VIDEO_FILE_FRAGMENT} },
   _type == "youtubeEmbed" => { ${YOUTUBE_EMBED_FRAGMENT} },
-  _type == "downloadableFile" => { ${DOWNLOADABLE_FILE_FRAGMENT} },
-  _type == "form" => {
-    ...,
-    formType,
-    title,
-    description,
-    submitLabel
-  },
-  _type == "callToAction" => {
-    ...,
-    title,
-    description,
-    link,
-    buttonLabel
-  },
   _type == "horizontalRule" => {
     ...
   },
@@ -112,7 +105,9 @@ export const PAGE_BUILDER_FRAGMENT = `
 
 export const DETAILED_BASE_PAGE_FRAGMENT = `
   ${BASE_PAGE_FRAGMENT},
+  ${HERO_FRAGMENT},
   "featuredImage": featuredImage { ${IMAGE_FRAGMENT} },
+  "autoExcerpt": array::join(string::split(pt::text(content), "")[0...200], ""),
   content[] {
     ${PORTABLE_TEXT_FRAGMENT}
   },

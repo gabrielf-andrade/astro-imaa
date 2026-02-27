@@ -6,13 +6,3 @@ export const ALL_PAGES_QUERY = defineQuery(`
     ${DETAILED_BASE_PAGE_FRAGMENT}
   }
 `);
-
-export const PAGE_BY_SLUG_QUERY = defineQuery(`
-  *[_type == "page" && slug.current == $slug][0] {
-    ${DETAILED_BASE_PAGE_FRAGMENT}
-  }
-`);
-
-export const PAGE_SLUGS_QUERY = defineQuery(`
-  *[_type == "page" && defined(slug.current)].slug.current
-`);
