@@ -92,19 +92,16 @@ export const PAGE_BUILDER_FRAGMENT = `
   _type == "horizontalRule" => {
     ...
   },
-  _type == "blockContent" => {
+  _type == "richText" => {
     ...,
-    ${PORTABLE_TEXT_FRAGMENT}
-  }
+    content[] { ${PORTABLE_TEXT_FRAGMENT} },
+    background,
+  },
 `;
 
 export const DETAILED_BASE_PAGE_FRAGMENT = `
   ${BASE_PAGE_FRAGMENT},
   ${HERO_FRAGMENT},
-  "featuredImage": featuredImage { ${IMAGE_FRAGMENT} },
-  "autoExcerpt": array::join(string::split(pt::text(content), "")[0...200], ""),
-  content[] {
-    ${PORTABLE_TEXT_FRAGMENT}
-  },
+  "featuredImage": featuredImage { ${IMAGE_FRAGMENT}, showInPage },
   "pageBuilder": pageBuilder[] { ${PAGE_BUILDER_FRAGMENT} }
 `;

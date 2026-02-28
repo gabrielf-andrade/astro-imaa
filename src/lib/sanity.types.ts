@@ -70,7 +70,7 @@ export type BlockContent = Array<
         _type: "span";
         _key: string;
       }>;
-      style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
+      style?: "normal" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
       listItem?: "bullet" | "number";
       markDefs?: Array<{
         href?: string;
@@ -244,6 +244,7 @@ export type FeaturedImage = {
   hotspot?: SanityImageHotspot;
   crop?: SanityImageCrop;
   alt?: string;
+  showInPage?: boolean;
 };
 
 export type Gallery = {
@@ -275,6 +276,12 @@ export type TextWithIllustration = {
     _type: "image";
   };
   imagePosition?: "right" | "left";
+};
+
+export type RichText = {
+  _type: "richText";
+  content?: BlockContent;
+  background?: "default" | "muted";
 };
 
 export type PageReference = {
@@ -323,9 +330,11 @@ export type Page = {
   slug?: Slug;
   hero?: Hero;
   featuredImage?: FeaturedImage;
-  content?: BlockContent;
   excerpt?: string;
   pageBuilder?: Array<
+    | ({
+        _key: string;
+      } & RichText)
     | ({
         _key: string;
       } & TextWithIllustration)
@@ -471,6 +480,7 @@ export type AllSanitySchemaTypes =
   | FeaturedImage
   | Gallery
   | TextWithIllustration
+  | RichText
   | PageReference
   | HomePageReference
   | MenuItem
@@ -490,7 +500,7 @@ export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: ../astro-imaa/src/lib/queries/page.ts
 // Variable: ALL_PAGES_QUERY
-// Query: *[_type == "page" && defined(slug.current)] | order(_createdAt desc) {        _id,  title,  excerpt,    "slug": slug.current,    hero {    heading,    tagline,  },  "featuredImage": featuredImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },  "autoExcerpt": array::join(string::split(pt::text(content), "")[0...200], ""),  content[] {      ...,  _type == "image" => {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "downloadableFile" => {   ...,  "url": asset->url },  },  "pageBuilder": pageBuilder[] {   _key,  _type,  _type == "textWithIllustration" => {    ...,    "image": image {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } }  },  _type == "gallery" => {    ...,    "images": images[] {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } }  },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "horizontalRule" => {    ...  },  _type == "blockContent" => {    ...,      ...,  _type == "image" => {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "downloadableFile" => {   ...,  "url": asset->url },  } }  }
+// Query: *[_type == "page" && defined(slug.current)] | order(_createdAt desc) {        _id,  title,  excerpt,    "slug": slug.current,    hero {    heading,    tagline,  },  "featuredImage": featuredImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  }, showInPage },  "pageBuilder": pageBuilder[] {   _key,  _type,  _type == "textWithIllustration" => {    ...,    "image": image {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } }  },  _type == "gallery" => {    ...,    "images": images[] {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } }  },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "horizontalRule" => {    ...  },  _type == "richText" => {    ...,    content[] {   ...,  _type == "image" => {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "downloadableFile" => {   ...,  "url": asset->url }, },    background,  }, }  }
 export type ALL_PAGES_QUERY_RESULT = Array<{
   _id: string;
   title: string | null;
@@ -518,108 +528,8 @@ export type ALL_PAGES_QUERY_RESULT = Array<{
         } | null;
       } | null;
     } | null;
+    showInPage: boolean | null;
   } | null;
-  autoExcerpt: string;
-  content: Array<
-    | {
-        children?: Array<{
-          marks?: Array<string>;
-          text?: string;
-          _type: "span";
-          _key: string;
-        }>;
-        style?:
-          | "blockquote"
-          | "h1"
-          | "h2"
-          | "h3"
-          | "h4"
-          | "h5"
-          | "h6"
-          | "normal";
-        listItem?: "bullet" | "number";
-        markDefs?: Array<{
-          href?: string;
-          blank?: boolean;
-          _type: "link";
-          _key: string;
-        }>;
-        level?: number;
-        _type: "block";
-        _key: string;
-      }
-    | {
-        _key: string;
-        _type: "downloadableFile";
-        asset?: SanityFileAssetReference;
-        media?: unknown;
-        title?: string;
-        label?: string;
-        url: string | null;
-      }
-    | {
-        _key: string;
-        _type: "horizontalRule";
-        info?: string;
-      }
-    | {
-        asset: {
-          _id: string;
-          url: string | null;
-          altText: string | null;
-          metadata: {
-            lqip: string | null;
-            dimensions: {
-              width: number | null;
-              height: number | null;
-              aspectRatio: number | null;
-            } | null;
-          } | null;
-        } | null;
-        media?: unknown;
-        hotspot: SanityImageHotspot | null;
-        crop: SanityImageCrop | null;
-        alt: string | null;
-        caption: string | null;
-        _type: "image";
-        _key: string;
-      }
-    | {
-        _key: string;
-        _type: "videoFile";
-        file: {
-          url: string | null;
-          mimeType: string | null;
-        };
-        posterImage: {
-          hotspot: SanityImageHotspot | null;
-          crop: SanityImageCrop | null;
-          alt: null;
-          caption: null;
-          asset: {
-            _id: string;
-            url: string | null;
-            altText: string | null;
-            metadata: {
-              lqip: string | null;
-              dimensions: {
-                width: number | null;
-                height: number | null;
-                aspectRatio: number | null;
-              } | null;
-            } | null;
-          } | null;
-        } | null;
-        caption?: string;
-        autoplay?: boolean;
-      }
-    | {
-        _key: string;
-        _type: "youtubeEmbed";
-        url: string | null;
-        caption: string | null;
-      }
-  > | null;
   pageBuilder: Array<
     | {
         _key: string;
@@ -650,6 +560,110 @@ export type ALL_PAGES_QUERY_RESULT = Array<{
         _key: string;
         _type: "horizontalRule";
         info?: string;
+      }
+    | {
+        _key: string;
+        _type: "richText";
+        content: Array<
+          | {
+              children?: Array<{
+                marks?: Array<string>;
+                text?: string;
+                _type: "span";
+                _key: string;
+              }>;
+              style?:
+                | "blockquote"
+                | "h2"
+                | "h3"
+                | "h4"
+                | "h5"
+                | "h6"
+                | "normal";
+              listItem?: "bullet" | "number";
+              markDefs?: Array<{
+                href?: string;
+                blank?: boolean;
+                _type: "link";
+                _key: string;
+              }>;
+              level?: number;
+              _type: "block";
+              _key: string;
+            }
+          | {
+              _key: string;
+              _type: "downloadableFile";
+              asset?: SanityFileAssetReference;
+              media?: unknown;
+              title?: string;
+              label?: string;
+              url: string | null;
+            }
+          | {
+              _key: string;
+              _type: "horizontalRule";
+              info?: string;
+            }
+          | {
+              asset: {
+                _id: string;
+                url: string | null;
+                altText: string | null;
+                metadata: {
+                  lqip: string | null;
+                  dimensions: {
+                    width: number | null;
+                    height: number | null;
+                    aspectRatio: number | null;
+                  } | null;
+                } | null;
+              } | null;
+              media?: unknown;
+              hotspot: SanityImageHotspot | null;
+              crop: SanityImageCrop | null;
+              alt: string | null;
+              caption: string | null;
+              _type: "image";
+              _key: string;
+            }
+          | {
+              _key: string;
+              _type: "videoFile";
+              file: {
+                url: string | null;
+                mimeType: string | null;
+              };
+              posterImage: {
+                hotspot: SanityImageHotspot | null;
+                crop: SanityImageCrop | null;
+                alt: null;
+                caption: null;
+                asset: {
+                  _id: string;
+                  url: string | null;
+                  altText: string | null;
+                  metadata: {
+                    lqip: string | null;
+                    dimensions: {
+                      width: number | null;
+                      height: number | null;
+                      aspectRatio: number | null;
+                    } | null;
+                  } | null;
+                } | null;
+              } | null;
+              caption?: string;
+              autoplay?: boolean;
+            }
+          | {
+              _key: string;
+              _type: "youtubeEmbed";
+              url: string | null;
+              caption: string | null;
+            }
+        > | null;
+        background: "default" | "muted" | null;
       }
     | {
         _key: string;
@@ -887,7 +901,7 @@ export type SITE_SETTINGS_QUERY_RESULT =
 
 // Source: ../astro-imaa/src/lib/queries/transparency.ts
 // Variable: TRANSPARENCY_INDEX_PAGE_QUERY
-// Query: *[_type == "page" && slug.current == "transparencia"][0] {        _id,  title,  excerpt,    "slug": slug.current,    hero {    heading,    tagline,  },  "featuredImage": featuredImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },  "autoExcerpt": array::join(string::split(pt::text(content), "")[0...200], ""),  content[] {      ...,  _type == "image" => {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "downloadableFile" => {   ...,  "url": asset->url },  },  "pageBuilder": pageBuilder[] {   _key,  _type,  _type == "textWithIllustration" => {    ...,    "image": image {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } }  },  _type == "gallery" => {    ...,    "images": images[] {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } }  },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "horizontalRule" => {    ...  },  _type == "blockContent" => {    ...,      ...,  _type == "image" => {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "downloadableFile" => {   ...,  "url": asset->url },  } }  }
+// Query: *[_type == "page" && slug.current == "transparencia"][0] {        _id,  title,  excerpt,    "slug": slug.current,    hero {    heading,    tagline,  },  "featuredImage": featuredImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  }, showInPage },  "pageBuilder": pageBuilder[] {   _key,  _type,  _type == "textWithIllustration" => {    ...,    "image": image {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } }  },  _type == "gallery" => {    ...,    "images": images[] {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } }  },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "horizontalRule" => {    ...  },  _type == "richText" => {    ...,    content[] {   ...,  _type == "image" => {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "downloadableFile" => {   ...,  "url": asset->url }, },    background,  }, }  }
 export type TRANSPARENCY_INDEX_PAGE_QUERY_RESULT = {
   _id: string;
   title: string | null;
@@ -915,108 +929,8 @@ export type TRANSPARENCY_INDEX_PAGE_QUERY_RESULT = {
         } | null;
       } | null;
     } | null;
+    showInPage: boolean | null;
   } | null;
-  autoExcerpt: string;
-  content: Array<
-    | {
-        children?: Array<{
-          marks?: Array<string>;
-          text?: string;
-          _type: "span";
-          _key: string;
-        }>;
-        style?:
-          | "blockquote"
-          | "h1"
-          | "h2"
-          | "h3"
-          | "h4"
-          | "h5"
-          | "h6"
-          | "normal";
-        listItem?: "bullet" | "number";
-        markDefs?: Array<{
-          href?: string;
-          blank?: boolean;
-          _type: "link";
-          _key: string;
-        }>;
-        level?: number;
-        _type: "block";
-        _key: string;
-      }
-    | {
-        _key: string;
-        _type: "downloadableFile";
-        asset?: SanityFileAssetReference;
-        media?: unknown;
-        title?: string;
-        label?: string;
-        url: string | null;
-      }
-    | {
-        _key: string;
-        _type: "horizontalRule";
-        info?: string;
-      }
-    | {
-        asset: {
-          _id: string;
-          url: string | null;
-          altText: string | null;
-          metadata: {
-            lqip: string | null;
-            dimensions: {
-              width: number | null;
-              height: number | null;
-              aspectRatio: number | null;
-            } | null;
-          } | null;
-        } | null;
-        media?: unknown;
-        hotspot: SanityImageHotspot | null;
-        crop: SanityImageCrop | null;
-        alt: string | null;
-        caption: string | null;
-        _type: "image";
-        _key: string;
-      }
-    | {
-        _key: string;
-        _type: "videoFile";
-        file: {
-          url: string | null;
-          mimeType: string | null;
-        };
-        posterImage: {
-          hotspot: SanityImageHotspot | null;
-          crop: SanityImageCrop | null;
-          alt: null;
-          caption: null;
-          asset: {
-            _id: string;
-            url: string | null;
-            altText: string | null;
-            metadata: {
-              lqip: string | null;
-              dimensions: {
-                width: number | null;
-                height: number | null;
-                aspectRatio: number | null;
-              } | null;
-            } | null;
-          } | null;
-        } | null;
-        caption?: string;
-        autoplay?: boolean;
-      }
-    | {
-        _key: string;
-        _type: "youtubeEmbed";
-        url: string | null;
-        caption: string | null;
-      }
-  > | null;
   pageBuilder: Array<
     | {
         _key: string;
@@ -1047,6 +961,110 @@ export type TRANSPARENCY_INDEX_PAGE_QUERY_RESULT = {
         _key: string;
         _type: "horizontalRule";
         info?: string;
+      }
+    | {
+        _key: string;
+        _type: "richText";
+        content: Array<
+          | {
+              children?: Array<{
+                marks?: Array<string>;
+                text?: string;
+                _type: "span";
+                _key: string;
+              }>;
+              style?:
+                | "blockquote"
+                | "h2"
+                | "h3"
+                | "h4"
+                | "h5"
+                | "h6"
+                | "normal";
+              listItem?: "bullet" | "number";
+              markDefs?: Array<{
+                href?: string;
+                blank?: boolean;
+                _type: "link";
+                _key: string;
+              }>;
+              level?: number;
+              _type: "block";
+              _key: string;
+            }
+          | {
+              _key: string;
+              _type: "downloadableFile";
+              asset?: SanityFileAssetReference;
+              media?: unknown;
+              title?: string;
+              label?: string;
+              url: string | null;
+            }
+          | {
+              _key: string;
+              _type: "horizontalRule";
+              info?: string;
+            }
+          | {
+              asset: {
+                _id: string;
+                url: string | null;
+                altText: string | null;
+                metadata: {
+                  lqip: string | null;
+                  dimensions: {
+                    width: number | null;
+                    height: number | null;
+                    aspectRatio: number | null;
+                  } | null;
+                } | null;
+              } | null;
+              media?: unknown;
+              hotspot: SanityImageHotspot | null;
+              crop: SanityImageCrop | null;
+              alt: string | null;
+              caption: string | null;
+              _type: "image";
+              _key: string;
+            }
+          | {
+              _key: string;
+              _type: "videoFile";
+              file: {
+                url: string | null;
+                mimeType: string | null;
+              };
+              posterImage: {
+                hotspot: SanityImageHotspot | null;
+                crop: SanityImageCrop | null;
+                alt: null;
+                caption: null;
+                asset: {
+                  _id: string;
+                  url: string | null;
+                  altText: string | null;
+                  metadata: {
+                    lqip: string | null;
+                    dimensions: {
+                      width: number | null;
+                      height: number | null;
+                      aspectRatio: number | null;
+                    } | null;
+                  } | null;
+                } | null;
+              } | null;
+              caption?: string;
+              autoplay?: boolean;
+            }
+          | {
+              _key: string;
+              _type: "youtubeEmbed";
+              url: string | null;
+              caption: string | null;
+            }
+        > | null;
+        background: "default" | "muted" | null;
       }
     | {
         _key: string;
@@ -1134,15 +1152,7 @@ export type ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT = Array<{
           _type: "span";
           _key: string;
         }>;
-        style?:
-          | "blockquote"
-          | "h1"
-          | "h2"
-          | "h3"
-          | "h4"
-          | "h5"
-          | "h6"
-          | "normal";
+        style?: "blockquote" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal";
         listItem?: "bullet" | "number";
         markDefs?: Array<{
           href?: string;
@@ -1253,9 +1263,9 @@ export type ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  *[_type == "page" && defined(slug.current)] | order(_createdAt desc) {\n    \n  \n  _id,\n  title,\n  excerpt,\n  \n  "slug": slug.current\n\n,\n  \n  hero {\n    heading,\n    tagline,\n  }\n,\n  "featuredImage": featuredImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n  "autoExcerpt": array::join(string::split(pt::text(content), "")[0...200], ""),\n  content[] {\n    \n  ...,\n  _type == "image" => { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "downloadableFile" => { \n  ...,\n  "url": asset->url\n },\n\n  },\n  "pageBuilder": pageBuilder[] { \n  _key,\n  _type,\n  _type == "textWithIllustration" => {\n    ...,\n    "image": image { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n  },\n  _type == "gallery" => {\n    ...,\n    "images": images[] { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n  },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "horizontalRule" => {\n    ...\n  },\n  _type == "blockContent" => {\n    ...,\n    \n  ...,\n  _type == "image" => { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "downloadableFile" => { \n  ...,\n  "url": asset->url\n },\n\n  }\n }\n\n  }\n': ALL_PAGES_QUERY_RESULT;
+    '\n  *[_type == "page" && defined(slug.current)] | order(_createdAt desc) {\n    \n  \n  _id,\n  title,\n  excerpt,\n  \n  "slug": slug.current\n\n,\n  \n  hero {\n    heading,\n    tagline,\n  }\n,\n  "featuredImage": featuredImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n, showInPage },\n  "pageBuilder": pageBuilder[] { \n  _key,\n  _type,\n  _type == "textWithIllustration" => {\n    ...,\n    "image": image { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n  },\n  _type == "gallery" => {\n    ...,\n    "images": images[] { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n  },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "horizontalRule" => {\n    ...\n  },\n  _type == "richText" => {\n    ...,\n    content[] { \n  ...,\n  _type == "image" => { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "downloadableFile" => { \n  ...,\n  "url": asset->url\n },\n },\n    background,\n  },\n }\n\n  }\n': ALL_PAGES_QUERY_RESULT;
     '\n  *[_id == "siteSettings"][0] {\n    title,\n    description,\n    "logo": logo {\n      \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n,\n    },\n    "mainMenu": {\n      "label": coalesce(mainMenu.label, "Menu Principal"),\n      "items": coalesce(mainMenu.items[] { \n  _key,\n  "label": coalesce(label, pageReference->title),\n  "slug": pageReference->slug.current,\n  "isDropdown": count(submenu) > 0,\n  submenu[] {\n    _key,\n    "label": coalesce(label, pageReference->title),\n    "slug": pageReference->slug.current\n  }\n }, [])\n    },\n    "footerMenu": {\n      "label": coalesce(footerMenu.label, "Navega\xE7\xE3o"),\n      "items": coalesce(footerMenu.items[] { \n  _key,\n  "label": coalesce(label, pageReference->title),\n  "slug": pageReference->slug.current,\n  "isDropdown": count(submenu) > 0,\n  submenu[] {\n    _key,\n    "label": coalesce(label, pageReference->title),\n    "slug": pageReference->slug.current\n  }\n }, [])\n    },\n    "socialLinks": coalesce(socialLinks[] {\n      platform,\n      url,\n      label\n    }, []),\n    "contactInfo": coalesce(contactInfo {\n      address,\n      phones,\n      emails\n    }, { "address": null, "phones": [], "emails": [] })\n  }\n': SITE_SETTINGS_QUERY_RESULT;
-    '\n  *[_type == "page" && slug.current == "transparencia"][0] {\n    \n  \n  _id,\n  title,\n  excerpt,\n  \n  "slug": slug.current\n\n,\n  \n  hero {\n    heading,\n    tagline,\n  }\n,\n  "featuredImage": featuredImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n  "autoExcerpt": array::join(string::split(pt::text(content), "")[0...200], ""),\n  content[] {\n    \n  ...,\n  _type == "image" => { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "downloadableFile" => { \n  ...,\n  "url": asset->url\n },\n\n  },\n  "pageBuilder": pageBuilder[] { \n  _key,\n  _type,\n  _type == "textWithIllustration" => {\n    ...,\n    "image": image { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n  },\n  _type == "gallery" => {\n    ...,\n    "images": images[] { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n  },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "horizontalRule" => {\n    ...\n  },\n  _type == "blockContent" => {\n    ...,\n    \n  ...,\n  _type == "image" => { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "downloadableFile" => { \n  ...,\n  "url": asset->url\n },\n\n  }\n }\n\n  }\n': TRANSPARENCY_INDEX_PAGE_QUERY_RESULT;
+    '\n  *[_type == "page" && slug.current == "transparencia"][0] {\n    \n  \n  _id,\n  title,\n  excerpt,\n  \n  "slug": slug.current\n\n,\n  \n  hero {\n    heading,\n    tagline,\n  }\n,\n  "featuredImage": featuredImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n, showInPage },\n  "pageBuilder": pageBuilder[] { \n  _key,\n  _type,\n  _type == "textWithIllustration" => {\n    ...,\n    "image": image { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n  },\n  _type == "gallery" => {\n    ...,\n    "images": images[] { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n  },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "horizontalRule" => {\n    ...\n  },\n  _type == "richText" => {\n    ...,\n    content[] { \n  ...,\n  _type == "image" => { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "downloadableFile" => { \n  ...,\n  "url": asset->url\n },\n },\n    background,\n  },\n }\n\n  }\n': TRANSPARENCY_INDEX_PAGE_QUERY_RESULT;
     '\n  *[_type == "transparencySection"] | order(order asc) {\n    _id,\n    title,\n    \n  "slug": slug.current\n,\n    \n  hero {\n    heading,\n    tagline,\n  }\n,\n    partner,\n    excerpt,\n    "autoExcerpt": array::join(string::split(pt::text(description), "")[0...200], ""),\n    description[] { \n  ...,\n  _type == "image" => { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "downloadableFile" => { \n  ...,\n  "url": asset->url\n },\n },\n    projects[] { \n  _key,\n  title,\n  origin,\n  value,\n  status,\n  documents[] { \n  _key,\n  title,\n  label,\n  "fileUrl": asset->url,\n  "fileName": asset->originalFilename,\n },\n },\n    documents[] { \n  _key,\n  title,\n  label,\n  "fileUrl": asset->url,\n  "fileName": asset->originalFilename,\n },\n  }\n': ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT;
   }
 }
