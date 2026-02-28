@@ -1,5 +1,5 @@
 ---
-import PortableTextRenderer from "@/components/common/PortableTextRenderer.astro";
+import PageBuilder from "@/components/common/pagebuilder/PageBuilder.astro";
 import TransparencySectionCard from "@/components/features/transparency/TransparencySectionCard.astro";
 import Container from "@/components/layout/Container.astro";
 import PageSection from "@/components/layout/PageSection.astro";
@@ -8,8 +8,7 @@ import Layout from "@/layouts/Layout.astro";
 import { loadQuery } from "@/lib/load-query";
 import { ALL_TRANSPARENCY_SECTIONS_QUERY, TRANSPARENCY_INDEX_PAGE_QUERY } from "@/lib/queries/transparency";
 import type { ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT, TRANSPARENCY_INDEX_PAGE_QUERY_RESULT } from "@/lib/sanity.types";
-import { truncateExcerpt } from "@/lib/utils/string-utils";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink } from "@lucide/astro";
 
 const [{ data: page }, { data: sections }] = await Promise.all([
   loadQuery<TRANSPARENCY_INDEX_PAGE_QUERY_RESULT>({ query: TRANSPARENCY_INDEX_PAGE_QUERY }),
@@ -19,24 +18,12 @@ const [{ data: page }, { data: sections }] = await Promise.all([
 const validSections = (sections ?? []).filter((s) => s.slug);
 ---
 
-<Layout
-  title={page?.title ?? "Portal da Transparência"}
-  description={truncateExcerpt(page?.excerpt ?? page?.autoExcerpt)}
-  image={page?.featuredImage}
->
+<Layout title={page?.title ?? "Portal da Transparência"} description={page?.excerpt ?? ""} image={page?.featuredImage}>
   <PageHero heading={page?.hero?.heading ?? "Portal da Transparência"} tagline={page?.hero?.tagline} />
 
-  {
-    page?.content && (
-      <PageSection bg="muted" py="md">
-        <Container size="md">
-          <PortableTextRenderer value={page.content} class="prose-p:text-muted-foreground" />
-        </Container>
-      </PageSection>
-    )
-  }
+  {page?.pageBuilder && page.pageBuilder.length > 0 && <PageBuilder pageBuilder={page.pageBuilder} />}
 
-  <PageSection py="md">
+  <PageSection py="md" class="pt-0">
     <Container size="lg">
       {
         validSections.length > 0 ? (
@@ -58,7 +45,7 @@ const validSections = (sections ?? []).filter((s) => s.slug);
           class="inline-flex items-center gap-2 border border-primary text-primary hover:bg-primary hover:text-white font-sans text-sm font-medium px-6 py-2.5 rounded-md transition-colors"
         >
           Portal da Transparência do Governo Federal
-          <ExternalLink className="w-4 h-4" />
+          <ExternalLink class="w-4 h-4" />
         </a>
       </div>
     </Container>

@@ -10,10 +10,9 @@ import Layout from "@/layouts/Layout.astro";
 import { loadQuery } from "@/lib/load-query";
 import { ALL_TRANSPARENCY_SECTIONS_QUERY } from "@/lib/queries/transparency";
 import type { ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT } from "@/lib/sanity.types";
-import { truncateExcerpt } from "@/lib/utils/string-utils";
 import { cn } from "@/lib/utils/ui-utils";
+import { FileText } from "@lucide/astro";
 import type { GetStaticPaths } from "astro";
-import { FileText } from "lucide-react";
 
 export const getStaticPaths = (async () => {
   const { data: sections } = await loadQuery<ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT>({
@@ -38,11 +37,8 @@ const hasDocuments = section.documents?.some((d) => d.fileUrl) ?? false;
 const hasContent = hasProjects || hasDocuments;
 ---
 
-<Layout
-  title={section.partner ?? section.title ?? "Transparência"}
-  description={truncateExcerpt(section.excerpt ?? section.autoExcerpt)}
->
-  <PageHero heading={section.hero?.tagline ?? section.title ?? ""} tagline={section.partner ?? ""} />
+<Layout title={section.partner ?? section.title ?? "Transparência"} description={section.excerpt ?? ""}>
+  <PageHero heading={section.hero?.tagline ?? section.title ?? ""} tagline={section.partner ?? ""} class="mb-12" />
 
   {
     hasDescription && (
@@ -74,7 +70,7 @@ const hasContent = hasProjects || hasDocuments;
       {
         !hasContent && (
           <div class="text-center py-12 text-muted-foreground font-sans mb-12">
-            <FileText className="w-10 h-10 mx-auto mb-3 opacity-30" />
+            <FileText class="w-10 h-10 mx-auto mb-3 opacity-30" />
             <p>Nenhum documento publicado ainda.</p>
           </div>
         )
