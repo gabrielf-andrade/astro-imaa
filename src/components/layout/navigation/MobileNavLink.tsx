@@ -1,11 +1,5 @@
+import { mobileUnderlineClass } from "@/lib/utils/navbar-utils";
 import { cn } from "@/lib/utils/ui-utils";
-
-const mobileUnderlineClass = cn(
-  "relative inline-block",
-  "after:absolute after:bottom-0 after:left-0 after:h-px after:w-full",
-  "after:bg-linear-to-r after:from-primary after:via-secondary after:via-50% after:to-accent",
-  "after:transition-transform after:duration-200 after:origin-left",
-);
 
 interface Props {
   href: string;

@@ -29,7 +29,7 @@ export default function Navbar({ currentPath, menuItems, socialLinks }: Readonly
 
   return (
     <header className="relative z-50 bg-card border-b">
-      <div className="h-1 w-full bg-linear-to-r from-primary via-secondary via-50% to-accent" />
+      <div className="h-1 w-full gradient-colors" />
 
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex items-center h-16 lg:h-20">

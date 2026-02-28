@@ -150,3 +150,7 @@
     @apply font-serif font-bold;
   }
 }
+
+@utility gradient-colors {
+  @apply bg-linear-to-r from-primary via-secondary to-accent;
+}
