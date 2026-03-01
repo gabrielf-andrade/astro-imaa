@@ -28,7 +28,12 @@ const resolvedCta = cta?.label ? resolveCta(cta) : null;
             class={cn(buttonVariants({ variant: "default", size: "default" }), "mt-6")}
           >
             {cta!.label}
-            {resolvedCta.isExternal ? <ExternalLink class="w-4 h-4" /> : <ArrowRight class="w-4 h-4" />}
+            {resolvedCta.openInNewTab && <span class="sr-only">(abre em nova aba)</span>}
+            {resolvedCta.isExternal ? (
+              <ExternalLink class="w-4 h-4" aria-hidden="true" />
+            ) : (
+              <ArrowRight class="w-4 h-4" aria-hidden="true" />
+            )}
           </a>
         )
       }

@@ -25,20 +25,20 @@ interface CtaButtonProps {
 
 function CtaButton({ cta, variant = "default", className }: Readonly<CtaButtonProps>) {
   if (!cta?.label) return null;
-  const resolved = resolveCta(cta);
-  if (!resolved) return null;
+  const resolvedCta = resolveCta(cta);
+  if (!resolvedCta) return null;
   return (
     <Button asChild size="lg" variant={variant} className={className}>
       <motion.a
-        href={resolved.href}
-        target={resolved.openInNewTab ? "_blank" : undefined}
-        rel={resolved.openInNewTab ? "noopener noreferrer" : undefined}
+        href={resolvedCta.href}
+        target={resolvedCta.openInNewTab ? "_blank" : undefined}
+        rel={resolvedCta.openInNewTab ? "noopener noreferrer" : undefined}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
         {cta.label}
-        {resolved.openInNewTab && <span className="sr-only">(abre em nova aba)</span>}
-        {resolved.isExternal ? (
+        {resolvedCta.openInNewTab && <span className="sr-only">(abre em nova aba)</span>}
+        {resolvedCta.isExternal ? (
           <ExternalLink className="w-4 h-4" aria-hidden="true" />
         ) : (
           <ArrowRight className="w-4 h-4" aria-hidden="true" />
