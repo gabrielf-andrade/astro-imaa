@@ -11,16 +11,14 @@ const { label, items } = Astro.props;
 ---
 
 <nav aria-labelledby="footer-nav-label">
-  <h3 id="footer-nav-label" class="text-sm font-bold uppercase tracking-widest text-secondary mb-4 font-sans">
-    {label}
-  </h3>
+  <h3 id="footer-nav-label" class="heading-label mb-4">{label}</h3>
   <ul class="space-y-2">
     {
       items.map((link) => (
         <li>
           <a
             href={buildUrlFromSlug(link.slug)}
-            class="text-sm text-primary-foreground/80 hover:text-secondary transition-colors font-sans"
+            class="caption-text-primary-foreground hover:text-secondary transition-colors"
           >
             {link.label}
           </a>

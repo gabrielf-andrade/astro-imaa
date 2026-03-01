@@ -19,8 +19,7 @@ const validSections = (sections ?? []).filter((s) => s.slug);
 ---
 
 <Layout title={page?.title ?? "Portal da Transparência"} description={page?.excerpt ?? ""} image={page?.featuredImage}>
-  <PageHero heading={page?.hero?.heading ?? "Portal da Transparência"} tagline={page?.hero?.tagline} />
-
+  <PageHero heading={page?.hero?.heading ?? page?.title ?? "Portal da Transparência"} tagline={page?.hero?.tagline} />
   {page?.pageBuilder && page.pageBuilder.length > 0 && <PageBuilder pageBuilder={page.pageBuilder} />}
 
   <PageSection py="md" class="pt-0">

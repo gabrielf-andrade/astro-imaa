@@ -11,13 +11,13 @@ const { contactInfo } = Astro.props;
 ---
 
 <div>
-  <h3 class="text-sm font-bold uppercase tracking-widest text-secondary mb-4 font-sans">Contato</h3>
+  <h3 class="heading-label mb-4">Contato</h3>
   <ul class="space-y-3">
     {
       contactInfo.address && (
         <li class="flex items-start gap-2">
-          <MapPin class="w-5 h-5 text-secondary mt-0.5 shrink-0" />
-          <div class="text-sm text-primary-foreground/80 font-sans">
+          <MapPin class="w-4 h-4 text-secondary mt-0.5 shrink-0" />
+          <div class="caption-text-primary-foreground">
             {contactInfo.address.street && (
               <p>
                 {contactInfo.address.street}
@@ -41,10 +41,10 @@ const { contactInfo } = Astro.props;
         ?.filter((item) => item.address)
         .map((item) => (
           <li class="flex items-center gap-2">
-            <Mail class="w-5 h-5 text-secondary shrink-0" />
+            <Mail class="w-4 h-4 text-secondary shrink-0" />
             <a
               href={`mailto:${item.address}`}
-              class="text-sm text-primary-foreground/80 hover:text-secondary transition-colors font-sans break-all"
+              class="caption-text-primary-foreground hover:text-secondary transition-colors break-all"
             >
               {item.address}
             </a>
@@ -66,7 +66,7 @@ const { contactInfo } = Astro.props;
               href={item.isWhatsApp ? `https://wa.me/${item.number?.replace(/\D/g, "")}` : `tel:${item.number}`}
               target={item.isWhatsApp ? "_blank" : undefined}
               rel={item.isWhatsApp ? "noopener noreferrer" : undefined}
-              class="text-sm text-primary-foreground/80 hover:text-secondary transition-colors font-sans"
+              class="caption-text-primary-foreground hover:text-secondary transition-colors"
             >
               {item.number}
             </a>

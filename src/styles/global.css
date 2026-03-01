@@ -72,7 +72,7 @@
   --secondary-foreground: oklch(0.18 0.02 30);
   --muted: oklch(95.697% 0.01483 158.634);
   --muted-foreground: oklch(0.45 0.04 155);
-  --accent: oklch(64.6% 0.222 41.116);
+  --accent: oklch(0.59 0.21 40.71);
   --accent-foreground: oklch(0.99 0 0);
   --destructive: oklch(0.52 0.22 22);
   --destructive-foreground: oklch(0.99 0 0);
@@ -153,4 +153,26 @@
 
 @utility gradient-colors {
   @apply bg-linear-to-r from-primary via-secondary to-accent;
+}
+
+@utility heading-1 {
+  @apply font-heading text-3xl md:text-5xl font-black tracking-wider text-pretty;
+}
+@utility heading-2 {
+  @apply font-serif text-2xl md:text-3xl font-bold text-foreground;
+}
+@utility heading-3 {
+  @apply font-serif text-lg md:text-xl font-bold text-foreground;
+}
+@utility heading-label {
+  @apply font-sans text-sm font-bold uppercase tracking-widest text-secondary;
+}
+@utility body-text {
+  @apply font-sans text-base leading-relaxed text-muted-foreground;
+}
+@utility caption-text {
+  @apply font-sans text-sm text-muted-foreground;
+}
+@utility caption-text-primary-foreground {
+  @apply font-sans text-sm text-primary-foreground/80;
 }

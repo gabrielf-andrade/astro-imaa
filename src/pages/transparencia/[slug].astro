@@ -38,7 +38,11 @@ const hasContent = hasProjects || hasDocuments;
 ---
 
 <Layout title={section.partner ?? section.title ?? "Transparência"} description={section.excerpt ?? ""}>
-  <PageHero heading={section.hero?.tagline ?? section.title ?? ""} tagline={section.partner ?? ""} class="mb-12" />
+  <PageHero
+    heading={section.hero?.heading ?? section.title ?? "Transparência"}
+    tagline={section.hero?.tagline ?? section.partner ?? ""}
+    class="mb-12"
+  />
 
   {
     hasDescription && (
