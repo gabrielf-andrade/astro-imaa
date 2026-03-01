@@ -1,12 +1,17 @@
 ---
 import SanityImage from "@/components/common/SanityImage";
 import Container from "@/components/layout/Container.astro";
+import { buttonVariants } from "@/components/ui/button";
 import type { PageBuilderBlockOf } from "@/lib/sanity-derived-types";
+import { resolveCta } from "@/lib/utils/link-utils";
+import { cn } from "@/lib/utils/ui-utils";
+import { ArrowRight, ExternalLink } from "@lucide/astro";
 
 type Props = PageBuilderBlockOf<"textWithIllustration">;
 
-const { heading, text, image, imagePosition = "right" } = Astro.props;
+const { heading, text, image, imagePosition = "right", cta } = Astro.props;
 const isImageLeft = imagePosition === "left";
+const resolvedCta = cta?.label ? resolveCta(cta) : null;
 ---
 
 <Container size="xl" class="py-pagebuilder">
@@ -14,6 +19,19 @@ const isImageLeft = imagePosition === "left";
     <div class="flex-1 min-w-0">
       {heading && <h2 class="text-3xl md:text-4xl font-bold text-foreground mb-6">{heading}</h2>}
       {text && <p class="text-muted-foreground font-sans leading-relaxed text-base">{text}</p>}
+      {
+        resolvedCta && (
+          <a
+            href={resolvedCta.href}
+            target={resolvedCta.openInNewTab ? "_blank" : undefined}
+            rel={resolvedCta.openInNewTab || resolvedCta.isExternal ? "noopener noreferrer" : undefined}
+            class={cn(buttonVariants({ variant: "default", size: "default" }), "mt-6")}
+          >
+            {cta!.label}
+            {resolvedCta.isExternal ? <ExternalLink class="w-4 h-4" /> : <ArrowRight class="w-4 h-4" />}
+          </a>
+        )
+      }
     </div>
 
     {

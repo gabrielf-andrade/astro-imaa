@@ -5,8 +5,6 @@
 import type {
   ALL_PAGES_QUERY_RESULT,
   ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT,
-  SanityImageCrop,
-  SanityImageHotspot,
   SITE_SETTINGS_QUERY_RESULT,
 } from "@/lib/sanity.types";
 
@@ -16,7 +14,7 @@ export interface ProjectedSanityAsset {
   url: string | null;
   altText?: string | null;
   metadata: {
-    lqip: string | null;
+    lqip?: string | null;
     dimensions: {
       width: number | null;
       height: number | null;
@@ -31,8 +29,20 @@ export interface SanityImageBase {
   alt?: string | null;
   caption?: string | null;
   media?: unknown;
-  hotspot?: SanityImageHotspot | null;
-  crop?: SanityImageCrop | null;
+  hotspot?: {
+    x?: number | null;
+    y?: number | null;
+    width?: number | null;
+    height?: number | null;
+    _type?: string | null;
+  } | null;
+  crop?: {
+    top?: number | null;
+    bottom?: number | null;
+    left?: number | null;
+    right?: number | null;
+    _type?: string | null;
+  } | null;
 }
 
 // ============================================================================

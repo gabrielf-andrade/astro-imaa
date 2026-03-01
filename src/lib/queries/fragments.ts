@@ -61,6 +61,14 @@ const DOWNLOADABLE_FILE_FRAGMENT = `
   "url": asset->url
 `;
 
+export const CTA_FRAGMENT = `
+  label,
+  linkType,
+  "slug": pageReference->slug.current,
+  externalUrl,
+  openInNewTab
+`;
+
 export const PORTABLE_TEXT_FRAGMENT = `
   ...,
   _type == "image" => { ${IMAGE_FRAGMENT} },
@@ -81,7 +89,8 @@ export const PAGE_BUILDER_FRAGMENT = `
   _type,
   _type == "textWithIllustration" => {
     ...,
-    "image": image { ${IMAGE_FRAGMENT} }
+    "image": image { ${IMAGE_FRAGMENT} },
+    "cta": cta { ${CTA_FRAGMENT} }
   },
   _type == "gallery" => {
     ...,
