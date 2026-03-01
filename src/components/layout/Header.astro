@@ -20,4 +20,10 @@ const socialLinks: QuerySocialLink[] = (siteSettings?.data.socialLinks ?? []).fi
 const currentPath = Astro.url.pathname;
 ---
 
-<Navbar client:load currentPath={currentPath} menuItems={menuItems} socialLinks={socialLinks} />
+<Navbar
+  client:load
+  currentPath={currentPath}
+  menuItems={menuItems}
+  socialLinks={socialLinks}
+  logo={siteSettings?.data.logo}
+/>

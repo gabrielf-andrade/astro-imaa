@@ -1,11 +1,12 @@
-import logoPlaceholder from "@/assets/bloco.jpg";
+import SanityImage from "@/components/common/SanityImage";
 import SocialLinks from "@/components/common/SocialLinks";
 import DesktopDropdown from "@/components/layout/navigation/DesktopDropdown";
 import MobileAccordionItem from "@/components/layout/navigation/MobileAccordionItem";
 import MobileNavLink from "@/components/layout/navigation/MobileNavLink";
 import NavLink from "@/components/layout/navigation/NavLink";
 import { Accordion } from "@/components/ui/accordion";
-import type { QueryMenuItem, QuerySocialLink } from "@/lib/sanity-derived-types";
+import { CARNIVAL_BLOCK_NAME, INSTITUTE_NAME } from "@/lib/constants";
+import type { QueryMenuItem, QuerySocialLink, SanityImageBase } from "@/lib/sanity-derived-types";
 import { isActiveLink } from "@/lib/utils/navbar-utils";
 import { buildUrlFromSlug } from "@/lib/utils/string-utils";
 import { Menu, X } from "lucide-react";
@@ -16,9 +17,10 @@ interface NavbarProps {
   currentPath: string;
   menuItems: QueryMenuItem[];
   socialLinks: QuerySocialLink[];
+  logo?: SanityImageBase | null;
 }
 
-export default function Navbar({ currentPath, menuItems, socialLinks }: Readonly<NavbarProps>) {
+export default function Navbar({ currentPath, menuItems, socialLinks, logo }: Readonly<NavbarProps>) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -31,43 +33,44 @@ export default function Navbar({ currentPath, menuItems, socialLinks }: Readonly
     <header className="relative z-50 bg-card border-b">
       <div className="h-1 w-full gradient-colors" />
 
-      <div className="container mx-auto px-4 max-w-7xl">
-        <div className="flex items-center h-16 lg:h-20">
+      <div className="px-4 xl:px-8">
+        <div className="flex items-center h-16 lg:h-20 gap-4 xl:gap-6">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-3 min-w-48">
-            <img
-              src={logoPlaceholder.src}
-              width={56}
-              height={56}
-              className="w-14 h-14 rounded-full object-cover"
-              alt="Logo Instituto Maestro Abiud"
-            />
+          <a href="/" className="flex items-center gap-2 shrink-0">
+            {logo && (
+              <SanityImage
+                image={logo}
+                width={56}
+                height={56}
+                className="w-14 h-14 rounded-full object-cover"
+                loading="eager"
+                alt={INSTITUTE_NAME}
+              />
+            )}
             <div>
-              <p className="text-xs font-semibold text-accent uppercase tracking-wide font-sans">Instituto Maestro</p>
-              <p className="text-xl font-bold text-primary font-serif leading-tight">Abiud Almeida</p>
+              <p className="text-[10px] font-semibold text-accent uppercase font-sans">{INSTITUTE_NAME}</p>
+              <p className="text-[17px] font-bold text-primary font-serif">{CARNIVAL_BLOCK_NAME}</p>
             </div>
           </a>
 
           {/* Nav Desktop */}
-          <nav className="hidden lg:flex flex-1 items-center justify-center gap-1">
-            {menuItems.map((item) => {
-              if (item.isDropdown && item.submenu?.length) {
-                return <DesktopDropdown key={item._key} item={item} currentPath={currentPath} />;
-              }
-              const href = buildUrlFromSlug(item.slug);
-              return (
-                <NavLink
-                  key={item._key}
-                  href={href}
-                  label={item.label ?? ""}
-                  active={isActiveLink(currentPath, href)}
-                />
-              );
-            })}
+          <nav className="hidden lg:flex flex-1 min-w-0 pb-0.5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex items-center gap-1 min-w-max ml-auto">
+              {menuItems.map((item) => {
+                if (item.isDropdown && item.submenu?.length) {
+                  return <DesktopDropdown key={item._key} item={item} currentPath={currentPath} />;
+                }
+                if (!item.label) return null;
+                const href = buildUrlFromSlug(item.slug);
+                return (
+                  <NavLink key={item._key} href={href} label={item.label} active={isActiveLink(currentPath, href)} />
+                );
+              })}
+            </div>
           </nav>
 
           {/* Redes sociais desktop */}
-          <SocialLinks socialLinks={socialLinks} className="hidden lg:flex lg:justify-center xl:justify-end min-w-48" />
+          <SocialLinks socialLinks={socialLinks} className="hidden lg:flex ml-auto shrink-0" />
 
           {/* Botão Mobile */}
           <button
@@ -113,12 +116,13 @@ export default function Navbar({ currentPath, menuItems, socialLinks }: Readonly
                     </Accordion>
                   );
                 }
+                if (!item.label) return null;
                 const href = buildUrlFromSlug(item.slug);
                 return (
                   <MobileNavLink
                     key={item._key}
                     href={href}
-                    label={item.label ?? ""}
+                    label={item.label}
                     active={isActiveLink(currentPath, href)}
                   />
                 );

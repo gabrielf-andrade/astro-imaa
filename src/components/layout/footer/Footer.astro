@@ -26,7 +26,11 @@ const contactInfo = siteSettings?.data.contactInfo as QueryContactInfo | null;
   <Container size="xl" class="py-12">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10">
       <div class="col-span-1 sm:col-span-2 lg:col-span-5">
-        <FooterBrand description={siteSettings?.data.description} socialLinks={socialLinks} />
+        <FooterBrand
+          description={siteSettings?.data.description}
+          socialLinks={socialLinks}
+          logo={siteSettings?.data.logo}
+        />
       </div>
 
       {
