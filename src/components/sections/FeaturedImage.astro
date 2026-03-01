@@ -18,7 +18,7 @@ const shouldRender = image?.showInPage && image?.asset;
       <div class="rounded-2xl overflow-hidden shadow-lg aspect-video">
         <SanityImage
           client:load
-          image={image!}
+          image={image}
           width={900}
           height={506}
           sizes="(max-width: 768px) 100vw, 896px"

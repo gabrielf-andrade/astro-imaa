@@ -14,8 +14,8 @@ const { heading, tagline, class: className } = Astro.props;
 
 <PageSection class={cn("bg-background text-foreground pt-12 pb-0", className)}>
   <Container size="md">
-    <h1 class="text-3xl md:text-5xl font-black mb-3 text-pretty tracking-wider">{heading}</h1>
-    {tagline && <p class="text-foreground/80 font-sans text-sm max-w-2xl text-pretty mb-3">{tagline}</p>}
+    <h1 class="heading-1 mb-3">{heading}</h1>
+    {tagline && <p class="body-text max-w-2xl text-pretty mb-3">{tagline}</p>}
     <div class="h-1.5 w-20 rounded-sm bg-accent origin-left animate-accent-bar"></div>
   </Container>
 </PageSection>

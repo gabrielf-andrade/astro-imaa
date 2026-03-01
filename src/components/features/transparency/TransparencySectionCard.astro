@@ -1,4 +1,5 @@
 ---
+import { Card } from "@/components/ui/card";
 import type { ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT } from "@/lib/sanity.types";
 import { ArrowRight, FileText } from "@lucide/astro";
 
@@ -13,27 +14,26 @@ const { section } = Astro.props;
 
 {
   section.slug && (
-    <a
-      href={`/transparencia/${section.slug}`}
-      class="group flex flex-col gap-3 p-6 rounded-2xl border border-border bg-card hover:border-primary hover:shadow-md transition-all duration-200"
-    >
-      <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center shrink-0 group-hover:bg-accent transition-colors">
-          <FileText class="w-6 h-6 text-white" />
+    <a href={`/transparencia/${section.slug}`} class="group block">
+      <Card className="flex flex-col gap-4 p-6 h-full hover:border-primary hover:shadow-md transition-all duration-200">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shrink-0 group-hover:bg-accent transition-colors">
+            <FileText class="w-5 h-5 text-white" />
+          </div>
+          <div class="min-w-0">
+            <h3 class="font-serif font-bold text-lg text-foreground leading-snug">
+              {section.hero?.heading ?? section.title ?? "Seção"}
+            </h3>
+            {section.partner && <p class="text-xs font-semibold text-accent font-sans mt-0.5">{section.partner}</p>}
+          </div>
         </div>
-        <div>
-          {section.partner && (
-            <p class="text-xs font-semibold text-accent uppercase tracking-widest font-sans">Parceiro</p>
-          )}
-          <h2 class="font-bold text-foreground leading-tight">{section.partner ?? section.title ?? "Seção"}</h2>
-        </div>
-      </div>
-      {section.excerpt && (
-        <p class="text-sm text-muted-foreground font-sans leading-relaxed line-clamp-2">{section.excerpt}</p>
-      )}
-      <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary font-sans mt-auto group-hover:underline">
-        Ver documentos <ArrowRight class="w-4 h-4" />
-      </span>
+
+        {section.excerpt && <p class="caption-text line-clamp-2">{section.excerpt}</p>}
+
+        <span class="inline-flex items-center gap-1 caption-text font-semibold text-primary mt-auto group-hover:underline">
+          Ver documentos <ArrowRight class="w-4 h-4" />
+        </span>
+      </Card>
     </a>
   )
 }
