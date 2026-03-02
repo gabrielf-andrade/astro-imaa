@@ -19,7 +19,6 @@ export type Address = {
   neighborhood?: string;
   cityState?: string;
   zipCode?: string;
-  googleMapsUrl?: string;
 };
 
 export type TransparencySection = {
@@ -195,6 +194,20 @@ export type CtaSection = {
   background?: "primary" | "muted";
 };
 
+export type FormField = {
+  _type: "formField";
+  fieldType?: "input" | "textarea" | "select" | "checkbox" | "radio";
+  label?: string;
+  placeholder?: string;
+  inputType?: "text" | "email" | "tel" | "number";
+  required?: boolean;
+  width?: "half" | "full";
+  options?: Array<{
+    label?: string;
+    _key: string;
+  }>;
+};
+
 export type PageReference = {
   _ref: string;
   _type: "reference";
@@ -317,14 +330,44 @@ export type HomePageReference = {
   [internalGroqTypeReferenceTo]?: "homePage";
 };
 
+export type ContactPageReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "contactPage";
+};
+
 export type MenuItem = {
   _type: "menuItem";
-  pageReference?: PageReference | HomePageReference;
+  pageReference?: PageReference | HomePageReference | ContactPageReference;
   label?: string;
   submenu?: Array<
     {
       _key: string;
     } & MenuItem
+  >;
+};
+
+export type ContactPage = {
+  _id: string;
+  _type: "contactPage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  heading?: string;
+  tagline?: string;
+  seoDescription?: string;
+  contactTabLabel?: string;
+  contactFormHeading?: string;
+  contactFormDescription?: string;
+  enrollmentActive?: boolean;
+  enrollmentTabLabel?: string;
+  enrollmentFormHeading?: string;
+  enrollmentFormDescription?: string;
+  enrollmentFormFields?: Array<
+    {
+      _key: string;
+    } & FormField
   >;
 };
 
@@ -504,6 +547,7 @@ export type AllSanitySchemaTypes =
   | SanityImageCrop
   | SanityImageHotspot
   | CtaSection
+  | FormField
   | PageReference
   | Cta
   | SocialLink
@@ -517,7 +561,9 @@ export type AllSanitySchemaTypes =
   | TextWithIllustration
   | RichText
   | HomePageReference
+  | ContactPageReference
   | MenuItem
+  | ContactPage
   | HomePage
   | Page
   | MediaTag
@@ -532,9 +578,38 @@ export type AllSanitySchemaTypes =
 
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
+// Source: ../astro-imaa/src/lib/queries/contact.ts
+// Variable: CONTACT_PAGE_QUERY
+// Query: *[_type == "contactPage"][0] {    heading,    tagline,    seoDescription,    contactTabLabel,    contactFormHeading,    contactFormDescription,    enrollmentActive,    enrollmentTabLabel,    enrollmentFormHeading,    enrollmentFormDescription,    "enrollmentFormFields": enrollmentFormFields[] {      _key,      fieldType,      label,      placeholder,      inputType,      required,      width,      "options": options[] {        _key,        label      }    }  }
+export type CONTACT_PAGE_QUERY_RESULT = {
+  heading: string | null;
+  tagline: string | null;
+  seoDescription: string | null;
+  contactTabLabel: string | null;
+  contactFormHeading: string | null;
+  contactFormDescription: string | null;
+  enrollmentActive: boolean | null;
+  enrollmentTabLabel: string | null;
+  enrollmentFormHeading: string | null;
+  enrollmentFormDescription: string | null;
+  enrollmentFormFields: Array<{
+    _key: string;
+    fieldType: "checkbox" | "input" | "radio" | "select" | "textarea" | null;
+    label: string | null;
+    placeholder: string | null;
+    inputType: "email" | "number" | "tel" | "text" | null;
+    required: boolean | null;
+    width: "full" | "half" | null;
+    options: Array<{
+      _key: string;
+      label: string | null;
+    }> | null;
+  }> | null;
+} | null;
+
 // Source: ../astro-imaa/src/lib/queries/home.ts
 // Variable: HOME_PAGE_QUERY
-// Query: *[_id == "homePage"][0] {    title,    excerpt,    heroDescription,    "logo": logo {        hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  }    },    "primaryCta": primaryCta {   label,  linkType,  "slug": pageReference->slug.current,  externalUrl,  openInNewTab },    "secondaryCta": secondaryCta {   label,  linkType,  "slug": pageReference->slug.current,  externalUrl,  openInNewTab },  }
+// Query: *[_id == "homePage"][0] {    title,    excerpt,    heroDescription,    "logo": logo {        hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  }    },    "primaryCta": primaryCta {   label,  linkType,  "slug": select(    pageReference->_type == "homePage" => "inicio",    pageReference->_type == "contactPage" => "contato",    pageReference->slug.current  ),  externalUrl,  openInNewTab },    "secondaryCta": secondaryCta {   label,  linkType,  "slug": select(    pageReference->_type == "homePage" => "inicio",    pageReference->_type == "contactPage" => "contato",    pageReference->slug.current  ),  externalUrl,  openInNewTab },  }
 export type HOME_PAGE_QUERY_RESULT =
   | {
       title: null;
@@ -628,7 +703,7 @@ export type HOME_PAGE_QUERY_RESULT =
 
 // Source: ../astro-imaa/src/lib/queries/page.ts
 // Variable: ALL_PAGES_QUERY
-// Query: *[_type == "page" && defined(slug.current)] | order(_createdAt desc) {        _id,  title,  excerpt,    "slug": slug.current,    hero {    heading,    tagline,  },  "featuredImage": featuredImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  }, showInPage },  "pageBuilder": pageBuilder[] {   _key,  _type,  _type == "ctaSection" => {    ...,    "primaryCta": primaryCta {   label,  linkType,  "slug": pageReference->slug.current,  externalUrl,  openInNewTab },    "secondaryCta": secondaryCta {   label,  linkType,  "slug": pageReference->slug.current,  externalUrl,  openInNewTab }  },  _type == "textWithIllustration" => {    ...,    "image": image {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },    "cta": cta {   label,  linkType,  "slug": pageReference->slug.current,  externalUrl,  openInNewTab }  },  _type == "gallery" => {    ...,    "images": images[] {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } }  },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "horizontalRule" => {    ...  },  _type == "richText" => {    ...,    content[] {   ...,  _type == "image" => {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "downloadableFile" => {   ...,  "url": asset->url }, },    background,  }, }  }
+// Query: *[_type == "page" && defined(slug.current)] | order(_createdAt desc) {        _id,  title,  excerpt,    "slug": slug.current,    hero {    heading,    tagline,  },  "featuredImage": featuredImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  }, showInPage },  "pageBuilder": pageBuilder[] {   _key,  _type,  _type == "ctaSection" => {    ...,    "primaryCta": primaryCta {   label,  linkType,  "slug": select(    pageReference->_type == "homePage" => "inicio",    pageReference->_type == "contactPage" => "contato",    pageReference->slug.current  ),  externalUrl,  openInNewTab },    "secondaryCta": secondaryCta {   label,  linkType,  "slug": select(    pageReference->_type == "homePage" => "inicio",    pageReference->_type == "contactPage" => "contato",    pageReference->slug.current  ),  externalUrl,  openInNewTab }  },  _type == "textWithIllustration" => {    ...,    "image": image {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },    "cta": cta {   label,  linkType,  "slug": select(    pageReference->_type == "homePage" => "inicio",    pageReference->_type == "contactPage" => "contato",    pageReference->slug.current  ),  externalUrl,  openInNewTab }  },  _type == "gallery" => {    ...,    "images": images[] {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } }  },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "horizontalRule" => {    ...  },  _type == "richText" => {    ...,    content[] {   ...,  _type == "image" => {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "downloadableFile" => {   ...,  "url": asset->url }, },    background,  }, }  }
 export type ALL_PAGES_QUERY_RESULT = Array<{
   _id: string;
   title: string | null;
@@ -887,7 +962,7 @@ export type ALL_PAGES_QUERY_RESULT = Array<{
 
 // Source: ../astro-imaa/src/lib/queries/site-settings.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_id == "siteSettings"][0] {    title,    defaultSeoDescription,    "logo": logo {        hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  },    },    "mainMenu": {      "label": coalesce(mainMenu.label, "Menu Principal"),      "items": coalesce(mainMenu.items[] {   _key,  "label": coalesce(label, pageReference->title),  "slug": pageReference->slug.current,  "isDropdown": count(submenu) > 0,  submenu[] {    _key,    "label": coalesce(label, pageReference->title),    "slug": pageReference->slug.current  } }, [])    },    "footerMenu": {      "label": coalesce(footerMenu.label, "Navegação"),      "items": coalesce(footerMenu.items[] {   _key,  "label": coalesce(label, pageReference->title),  "slug": pageReference->slug.current,  "isDropdown": count(submenu) > 0,  submenu[] {    _key,    "label": coalesce(label, pageReference->title),    "slug": pageReference->slug.current  } }, [])    },    "socialLinks": coalesce(socialLinks[] {      platform,      url,      label    }, []),    "contactInfo": coalesce(contactInfo {      address,      phones,      emails    }, { "address": null, "phones": [], "emails": [] })  }
+// Query: *[_id == "siteSettings"][0] {    title,    defaultSeoDescription,    "logo": logo {        hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  },    },    "mainMenu": {      "label": coalesce(mainMenu.label, "Menu Principal"),      "items": coalesce(mainMenu.items[] {   _key,  "label": coalesce(label, pageReference->title),  "slug": select(    pageReference->_type == "homePage" => "inicio",    pageReference->_type == "contactPage" => "contato",    pageReference->slug.current  ),  "isDropdown": count(submenu) > 0,  submenu[] {    _key,    "label": coalesce(label, pageReference->title),    "slug": select(      pageReference->_type == "homePage" => "inicio",      pageReference->_type == "contactPage" => "contato",      pageReference->slug.current    )  } }, [])    },    "footerMenu": {      "label": coalesce(footerMenu.label, "Navegação"),      "items": coalesce(footerMenu.items[] {   _key,  "label": coalesce(label, pageReference->title),  "slug": select(    pageReference->_type == "homePage" => "inicio",    pageReference->_type == "contactPage" => "contato",    pageReference->slug.current  ),  "isDropdown": count(submenu) > 0,  submenu[] {    _key,    "label": coalesce(label, pageReference->title),    "slug": select(      pageReference->_type == "homePage" => "inicio",      pageReference->_type == "contactPage" => "contato",      pageReference->slug.current    )  } }, [])    },    "socialLinks": coalesce(socialLinks[] {      platform,      url,      label    }, []),    "contactInfo": coalesce(contactInfo {      address,      phones,      emails    }, { "address": null, "phones": [], "emails": [] })  }
 export type SITE_SETTINGS_QUERY_RESULT =
   | {
       title: string | null;
@@ -917,12 +992,12 @@ export type SITE_SETTINGS_QUERY_RESULT =
           | Array<{
               _key: string;
               label: string | null;
-              slug: string | null;
+              slug: string | "contato" | "inicio" | null;
               isDropdown: boolean | null;
               submenu: Array<{
                 _key: string;
                 label: string | null;
-                slug: string | null;
+                slug: string | "contato" | "inicio" | null;
               }> | null;
             }>
           | Array<never>;
@@ -933,12 +1008,12 @@ export type SITE_SETTINGS_QUERY_RESULT =
           | Array<{
               _key: string;
               label: string | null;
-              slug: string | null;
+              slug: string | "contato" | "inicio" | null;
               isDropdown: boolean | null;
               submenu: Array<{
                 _key: string;
                 label: string | null;
-                slug: string | null;
+                slug: string | "contato" | "inicio" | null;
               }> | null;
             }>
           | Array<never>;
@@ -1056,7 +1131,7 @@ export type SITE_SETTINGS_QUERY_RESULT =
 
 // Source: ../astro-imaa/src/lib/queries/transparency.ts
 // Variable: TRANSPARENCY_INDEX_PAGE_QUERY
-// Query: *[_type == "page" && slug.current == "transparencia"][0] {        _id,  title,  excerpt,    "slug": slug.current,    hero {    heading,    tagline,  },  "featuredImage": featuredImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  }, showInPage },  "pageBuilder": pageBuilder[] {   _key,  _type,  _type == "ctaSection" => {    ...,    "primaryCta": primaryCta {   label,  linkType,  "slug": pageReference->slug.current,  externalUrl,  openInNewTab },    "secondaryCta": secondaryCta {   label,  linkType,  "slug": pageReference->slug.current,  externalUrl,  openInNewTab }  },  _type == "textWithIllustration" => {    ...,    "image": image {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },    "cta": cta {   label,  linkType,  "slug": pageReference->slug.current,  externalUrl,  openInNewTab }  },  _type == "gallery" => {    ...,    "images": images[] {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } }  },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "horizontalRule" => {    ...  },  _type == "richText" => {    ...,    content[] {   ...,  _type == "image" => {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "downloadableFile" => {   ...,  "url": asset->url }, },    background,  }, }  }
+// Query: *[_type == "page" && slug.current == "transparencia"][0] {        _id,  title,  excerpt,    "slug": slug.current,    hero {    heading,    tagline,  },  "featuredImage": featuredImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  }, showInPage },  "pageBuilder": pageBuilder[] {   _key,  _type,  _type == "ctaSection" => {    ...,    "primaryCta": primaryCta {   label,  linkType,  "slug": select(    pageReference->_type == "homePage" => "inicio",    pageReference->_type == "contactPage" => "contato",    pageReference->slug.current  ),  externalUrl,  openInNewTab },    "secondaryCta": secondaryCta {   label,  linkType,  "slug": select(    pageReference->_type == "homePage" => "inicio",    pageReference->_type == "contactPage" => "contato",    pageReference->slug.current  ),  externalUrl,  openInNewTab }  },  _type == "textWithIllustration" => {    ...,    "image": image {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },    "cta": cta {   label,  linkType,  "slug": select(    pageReference->_type == "homePage" => "inicio",    pageReference->_type == "contactPage" => "contato",    pageReference->slug.current  ),  externalUrl,  openInNewTab }  },  _type == "gallery" => {    ...,    "images": images[] {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } }  },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "horizontalRule" => {    ...  },  _type == "richText" => {    ...,    content[] {   ...,  _type == "image" => {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } },  _type == "videoFile" => {   ...,  "file": {    "url": file.asset->url,    "mimeType": file.asset->mimeType  },  "posterImage": posterImage {   hotspot,  crop,    alt,      caption,   asset-> {    _id,    url,     altText,    metadata {      lqip,       dimensions {        width,        height,        aspectRatio      }    }  } } },  _type == "youtubeEmbed" => {   ...,  url,  caption },  _type == "downloadableFile" => {   ...,  "url": asset->url }, },    background,  }, }  }
 export type TRANSPARENCY_INDEX_PAGE_QUERY_RESULT = {
   _id: string;
   title: string | null;
@@ -1445,10 +1520,11 @@ export type ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  *[_id == "homePage"][0] {\n    title,\n    excerpt,\n    heroDescription,\n    "logo": logo {\n      \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n\n    },\n    "primaryCta": primaryCta { \n  label,\n  linkType,\n  "slug": pageReference->slug.current,\n  externalUrl,\n  openInNewTab\n },\n    "secondaryCta": secondaryCta { \n  label,\n  linkType,\n  "slug": pageReference->slug.current,\n  externalUrl,\n  openInNewTab\n },\n  }\n': HOME_PAGE_QUERY_RESULT;
-    '\n  *[_type == "page" && defined(slug.current)] | order(_createdAt desc) {\n    \n  \n  _id,\n  title,\n  excerpt,\n  \n  "slug": slug.current\n\n,\n  \n  hero {\n    heading,\n    tagline,\n  }\n,\n  "featuredImage": featuredImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n, showInPage },\n  "pageBuilder": pageBuilder[] { \n  _key,\n  _type,\n  _type == "ctaSection" => {\n    ...,\n    "primaryCta": primaryCta { \n  label,\n  linkType,\n  "slug": pageReference->slug.current,\n  externalUrl,\n  openInNewTab\n },\n    "secondaryCta": secondaryCta { \n  label,\n  linkType,\n  "slug": pageReference->slug.current,\n  externalUrl,\n  openInNewTab\n }\n  },\n  _type == "textWithIllustration" => {\n    ...,\n    "image": image { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n    "cta": cta { \n  label,\n  linkType,\n  "slug": pageReference->slug.current,\n  externalUrl,\n  openInNewTab\n }\n  },\n  _type == "gallery" => {\n    ...,\n    "images": images[] { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n  },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "horizontalRule" => {\n    ...\n  },\n  _type == "richText" => {\n    ...,\n    content[] { \n  ...,\n  _type == "image" => { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "downloadableFile" => { \n  ...,\n  "url": asset->url\n },\n },\n    background,\n  },\n }\n\n  }\n': ALL_PAGES_QUERY_RESULT;
-    '\n  *[_id == "siteSettings"][0] {\n    title,\n    defaultSeoDescription,\n    "logo": logo {\n      \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n,\n    },\n    "mainMenu": {\n      "label": coalesce(mainMenu.label, "Menu Principal"),\n      "items": coalesce(mainMenu.items[] { \n  _key,\n  "label": coalesce(label, pageReference->title),\n  "slug": pageReference->slug.current,\n  "isDropdown": count(submenu) > 0,\n  submenu[] {\n    _key,\n    "label": coalesce(label, pageReference->title),\n    "slug": pageReference->slug.current\n  }\n }, [])\n    },\n    "footerMenu": {\n      "label": coalesce(footerMenu.label, "Navega\xE7\xE3o"),\n      "items": coalesce(footerMenu.items[] { \n  _key,\n  "label": coalesce(label, pageReference->title),\n  "slug": pageReference->slug.current,\n  "isDropdown": count(submenu) > 0,\n  submenu[] {\n    _key,\n    "label": coalesce(label, pageReference->title),\n    "slug": pageReference->slug.current\n  }\n }, [])\n    },\n    "socialLinks": coalesce(socialLinks[] {\n      platform,\n      url,\n      label\n    }, []),\n    "contactInfo": coalesce(contactInfo {\n      address,\n      phones,\n      emails\n    }, { "address": null, "phones": [], "emails": [] })\n  }\n': SITE_SETTINGS_QUERY_RESULT;
-    '\n  *[_type == "page" && slug.current == "transparencia"][0] {\n    \n  \n  _id,\n  title,\n  excerpt,\n  \n  "slug": slug.current\n\n,\n  \n  hero {\n    heading,\n    tagline,\n  }\n,\n  "featuredImage": featuredImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n, showInPage },\n  "pageBuilder": pageBuilder[] { \n  _key,\n  _type,\n  _type == "ctaSection" => {\n    ...,\n    "primaryCta": primaryCta { \n  label,\n  linkType,\n  "slug": pageReference->slug.current,\n  externalUrl,\n  openInNewTab\n },\n    "secondaryCta": secondaryCta { \n  label,\n  linkType,\n  "slug": pageReference->slug.current,\n  externalUrl,\n  openInNewTab\n }\n  },\n  _type == "textWithIllustration" => {\n    ...,\n    "image": image { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n    "cta": cta { \n  label,\n  linkType,\n  "slug": pageReference->slug.current,\n  externalUrl,\n  openInNewTab\n }\n  },\n  _type == "gallery" => {\n    ...,\n    "images": images[] { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n  },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "horizontalRule" => {\n    ...\n  },\n  _type == "richText" => {\n    ...,\n    content[] { \n  ...,\n  _type == "image" => { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "downloadableFile" => { \n  ...,\n  "url": asset->url\n },\n },\n    background,\n  },\n }\n\n  }\n': TRANSPARENCY_INDEX_PAGE_QUERY_RESULT;
+    '\n  *[_type == "contactPage"][0] {\n    heading,\n    tagline,\n    seoDescription,\n    contactTabLabel,\n    contactFormHeading,\n    contactFormDescription,\n    enrollmentActive,\n    enrollmentTabLabel,\n    enrollmentFormHeading,\n    enrollmentFormDescription,\n    "enrollmentFormFields": enrollmentFormFields[] {\n      _key,\n      fieldType,\n      label,\n      placeholder,\n      inputType,\n      required,\n      width,\n      "options": options[] {\n        _key,\n        label\n      }\n    }\n  }\n': CONTACT_PAGE_QUERY_RESULT;
+    '\n  *[_id == "homePage"][0] {\n    title,\n    excerpt,\n    heroDescription,\n    "logo": logo {\n      \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n\n    },\n    "primaryCta": primaryCta { \n  label,\n  linkType,\n  "slug": select(\n    pageReference->_type == "homePage" => "inicio",\n    pageReference->_type == "contactPage" => "contato",\n    pageReference->slug.current\n  ),\n  externalUrl,\n  openInNewTab\n },\n    "secondaryCta": secondaryCta { \n  label,\n  linkType,\n  "slug": select(\n    pageReference->_type == "homePage" => "inicio",\n    pageReference->_type == "contactPage" => "contato",\n    pageReference->slug.current\n  ),\n  externalUrl,\n  openInNewTab\n },\n  }\n': HOME_PAGE_QUERY_RESULT;
+    '\n  *[_type == "page" && defined(slug.current)] | order(_createdAt desc) {\n    \n  \n  _id,\n  title,\n  excerpt,\n  \n  "slug": slug.current\n\n,\n  \n  hero {\n    heading,\n    tagline,\n  }\n,\n  "featuredImage": featuredImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n, showInPage },\n  "pageBuilder": pageBuilder[] { \n  _key,\n  _type,\n  _type == "ctaSection" => {\n    ...,\n    "primaryCta": primaryCta { \n  label,\n  linkType,\n  "slug": select(\n    pageReference->_type == "homePage" => "inicio",\n    pageReference->_type == "contactPage" => "contato",\n    pageReference->slug.current\n  ),\n  externalUrl,\n  openInNewTab\n },\n    "secondaryCta": secondaryCta { \n  label,\n  linkType,\n  "slug": select(\n    pageReference->_type == "homePage" => "inicio",\n    pageReference->_type == "contactPage" => "contato",\n    pageReference->slug.current\n  ),\n  externalUrl,\n  openInNewTab\n }\n  },\n  _type == "textWithIllustration" => {\n    ...,\n    "image": image { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n    "cta": cta { \n  label,\n  linkType,\n  "slug": select(\n    pageReference->_type == "homePage" => "inicio",\n    pageReference->_type == "contactPage" => "contato",\n    pageReference->slug.current\n  ),\n  externalUrl,\n  openInNewTab\n }\n  },\n  _type == "gallery" => {\n    ...,\n    "images": images[] { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n  },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "horizontalRule" => {\n    ...\n  },\n  _type == "richText" => {\n    ...,\n    content[] { \n  ...,\n  _type == "image" => { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "downloadableFile" => { \n  ...,\n  "url": asset->url\n },\n },\n    background,\n  },\n }\n\n  }\n': ALL_PAGES_QUERY_RESULT;
+    '\n  *[_id == "siteSettings"][0] {\n    title,\n    defaultSeoDescription,\n    "logo": logo {\n      \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n,\n    },\n    "mainMenu": {\n      "label": coalesce(mainMenu.label, "Menu Principal"),\n      "items": coalesce(mainMenu.items[] { \n  _key,\n  "label": coalesce(label, pageReference->title),\n  "slug": select(\n    pageReference->_type == "homePage" => "inicio",\n    pageReference->_type == "contactPage" => "contato",\n    pageReference->slug.current\n  ),\n  "isDropdown": count(submenu) > 0,\n  submenu[] {\n    _key,\n    "label": coalesce(label, pageReference->title),\n    "slug": select(\n      pageReference->_type == "homePage" => "inicio",\n      pageReference->_type == "contactPage" => "contato",\n      pageReference->slug.current\n    )\n  }\n }, [])\n    },\n    "footerMenu": {\n      "label": coalesce(footerMenu.label, "Navega\xE7\xE3o"),\n      "items": coalesce(footerMenu.items[] { \n  _key,\n  "label": coalesce(label, pageReference->title),\n  "slug": select(\n    pageReference->_type == "homePage" => "inicio",\n    pageReference->_type == "contactPage" => "contato",\n    pageReference->slug.current\n  ),\n  "isDropdown": count(submenu) > 0,\n  submenu[] {\n    _key,\n    "label": coalesce(label, pageReference->title),\n    "slug": select(\n      pageReference->_type == "homePage" => "inicio",\n      pageReference->_type == "contactPage" => "contato",\n      pageReference->slug.current\n    )\n  }\n }, [])\n    },\n    "socialLinks": coalesce(socialLinks[] {\n      platform,\n      url,\n      label\n    }, []),\n    "contactInfo": coalesce(contactInfo {\n      address,\n      phones,\n      emails\n    }, { "address": null, "phones": [], "emails": [] })\n  }\n': SITE_SETTINGS_QUERY_RESULT;
+    '\n  *[_type == "page" && slug.current == "transparencia"][0] {\n    \n  \n  _id,\n  title,\n  excerpt,\n  \n  "slug": slug.current\n\n,\n  \n  hero {\n    heading,\n    tagline,\n  }\n,\n  "featuredImage": featuredImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n, showInPage },\n  "pageBuilder": pageBuilder[] { \n  _key,\n  _type,\n  _type == "ctaSection" => {\n    ...,\n    "primaryCta": primaryCta { \n  label,\n  linkType,\n  "slug": select(\n    pageReference->_type == "homePage" => "inicio",\n    pageReference->_type == "contactPage" => "contato",\n    pageReference->slug.current\n  ),\n  externalUrl,\n  openInNewTab\n },\n    "secondaryCta": secondaryCta { \n  label,\n  linkType,\n  "slug": select(\n    pageReference->_type == "homePage" => "inicio",\n    pageReference->_type == "contactPage" => "contato",\n    pageReference->slug.current\n  ),\n  externalUrl,\n  openInNewTab\n }\n  },\n  _type == "textWithIllustration" => {\n    ...,\n    "image": image { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n    "cta": cta { \n  label,\n  linkType,\n  "slug": select(\n    pageReference->_type == "homePage" => "inicio",\n    pageReference->_type == "contactPage" => "contato",\n    pageReference->slug.current\n  ),\n  externalUrl,\n  openInNewTab\n }\n  },\n  _type == "gallery" => {\n    ...,\n    "images": images[] { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n  },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "horizontalRule" => {\n    ...\n  },\n  _type == "richText" => {\n    ...,\n    content[] { \n  ...,\n  _type == "image" => { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "downloadableFile" => { \n  ...,\n  "url": asset->url\n },\n },\n    background,\n  },\n }\n\n  }\n': TRANSPARENCY_INDEX_PAGE_QUERY_RESULT;
     '\n  *[_type == "transparencySection"] | order(order asc) {\n    _id,\n    title,\n    \n  "slug": slug.current\n,\n    \n  hero {\n    heading,\n    tagline,\n  }\n,\n    partner,\n    excerpt,\n    description[] { \n  ...,\n  _type == "image" => { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n },\n  _type == "videoFile" => { \n  ...,\n  "file": {\n    "url": file.asset->url,\n    "mimeType": file.asset->mimeType\n  },\n  "posterImage": posterImage { \n  hotspot,\n  crop,  \n  alt,    \n  caption, \n  asset-> {\n    _id,\n    url, \n    altText,\n    metadata {\n      lqip, \n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n }\n },\n  _type == "youtubeEmbed" => { \n  ...,\n  url,\n  caption\n },\n  _type == "downloadableFile" => { \n  ...,\n  "url": asset->url\n },\n },\n    projects[] { \n  _key,\n  title,\n  origin,\n  value,\n  status,\n  documents[] { \n  _key,\n  title,\n  label,\n  "fileUrl": asset->url,\n  "fileName": asset->originalFilename,\n },\n },\n    documents[] { \n  _key,\n  title,\n  label,\n  "fileUrl": asset->url,\n  "fileName": asset->originalFilename,\n },\n  }\n': ALL_TRANSPARENCY_SECTIONS_QUERY_RESULT;
   }
 }

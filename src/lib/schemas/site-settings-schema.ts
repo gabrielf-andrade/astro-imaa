@@ -76,10 +76,6 @@ const addressSchema = z.object({
   neighborhood: z.string().nullable().optional(),
   cityState: z.string().nullable().optional(),
   zipCode: z.string().nullable().optional(),
-  googleMapsUrl: z
-    .union([z.literal(""), z.string().url()])
-    .nullable()
-    .optional(),
 });
 
 const phoneSchema = z.object({
