@@ -129,6 +129,7 @@ export default function Gallery({ heading, images, layout = "grid3" }: Readonly<
           </div>
         )}
 
+        {/* TODO: Verificar para adicionar opção de autoplay e também botão lateral ao inves de embaixo + loop */}
         {/* Carousel */}
         {layout === "carousel" && (
           <Carousel opts={{ align: "start", loop: true }} className="w-full">
