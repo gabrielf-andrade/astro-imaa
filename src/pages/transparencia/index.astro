@@ -45,11 +45,11 @@ const validSections = (sections ?? []).filter((s) => s.slug);
           rel="noopener noreferrer"
           class={cn(
             buttonVariants({ variant: "outline" }),
-            "border-primary text-primary hover:bg-primary hover:text-white",
+            "border-primary text-primary hover:bg-primary hover:text-white max-w-full h-auto whitespace-normal py-2 text-pretty",
           )}
         >
           Portal da Transparência do Governo Federal
-          <ExternalLink class="w-4 h-4" aria-hidden="true" />
+          <ExternalLink class="w-4 h-4 shrink-0" aria-hidden="true" />
           <span class="sr-only">(abre em nova aba)</span>
         </a>
       </div>
