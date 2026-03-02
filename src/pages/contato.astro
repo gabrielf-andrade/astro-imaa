@@ -1,0 +1,62 @@
+---
+import ContactInfo from "@/components/features/contact/ContactInfo.astro";
+import ContactTabs from "@/components/features/contact/ContactTabs";
+import Container from "@/components/layout/Container.astro";
+import PageSection from "@/components/layout/PageSection.astro";
+import PageHero from "@/components/sections/PageHero.astro";
+import Layout from "@/layouts/Layout.astro";
+import { loadQuery } from "@/lib/load-query";
+import { CONTACT_PAGE_QUERY } from "@/lib/queries/contact";
+import type { QueryContactInfo, QuerySocialLink } from "@/lib/sanity-derived-types";
+import type { CONTACT_PAGE_QUERY_RESULT } from "@/lib/sanity.types";
+import { getEntry } from "astro:content";
+
+const [{ data: contactPage }, siteSettings] = await Promise.all([
+  loadQuery<CONTACT_PAGE_QUERY_RESULT>({ query: CONTACT_PAGE_QUERY }),
+  getEntry("siteSettings", "site-settings"),
+]);
+
+const contactInfo = siteSettings?.data.contactInfo as QueryContactInfo | null;
+const socialLinks = (siteSettings?.data.socialLinks ?? []) as QuerySocialLink[];
+
+const enrollmentFormFields = (contactPage?.enrollmentFormFields ?? [])
+  .filter(
+    (f): f is typeof f & { fieldType: NonNullable<typeof f.fieldType>; label: string } =>
+      f.fieldType != null && f.label != null,
+  )
+  .map((f) => ({
+    ...f,
+    options: (f.options ?? []).filter((o): o is typeof o & { label: string } => o.label != null),
+  }));
+---
+
+<Layout
+  title={contactPage?.heading ?? "Contato"}
+  description={contactPage?.seoDescription ?? siteSettings?.data.defaultSeoDescription ?? ""}
+>
+  <PageHero heading={contactPage?.heading ?? "Entre em Contato"} tagline={contactPage?.tagline} containerSize="xl" />
+
+  <PageSection py="lg" bg="muted" class="mt-12">
+    <Container size="xl">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div class="lg:col-span-2">
+          <ContactTabs
+            client:load
+            enrollmentActive={contactPage?.enrollmentActive ?? false}
+            contactTabLabel={contactPage?.contactTabLabel ?? "Fale Conosco"}
+            contactFormHeading={contactPage?.contactFormHeading ?? null}
+            contactFormDescription={contactPage?.contactFormDescription ?? null}
+            enrollmentTabLabel={contactPage?.enrollmentTabLabel ?? "Pré-inscrição nas Oficinas"}
+            enrollmentFormHeading={contactPage?.enrollmentFormHeading ?? null}
+            enrollmentFormDescription={contactPage?.enrollmentFormDescription ?? null}
+            enrollmentFormFields={enrollmentFormFields}
+          />
+        </div>
+
+        <aside>
+          <ContactInfo contactInfo={contactInfo} socialLinks={socialLinks} />
+        </aside>
+      </div>
+    </Container>
+  </PageSection>
+</Layout>

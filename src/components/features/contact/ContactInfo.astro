@@ -1,0 +1,132 @@
+---
+import SocialLinks from "@/components/common/SocialLinks";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
+import type { QueryContactInfo, QuerySocialLink } from "@/lib/sanity-derived-types";
+import { Mail, MapPin, Phone } from "@lucide/astro";
+
+interface Props {
+  contactInfo: QueryContactInfo | null;
+  socialLinks: QuerySocialLink[];
+}
+
+const { contactInfo, socialLinks } = Astro.props;
+
+const address = contactInfo?.address;
+const hasAddress = address && (address.street || address.cityState);
+const emails = contactInfo?.emails?.filter((e) => e.address) ?? [];
+const phones = contactInfo?.phones?.filter((p) => p.number) ?? [];
+---
+
+<div class="space-y-6">
+  {/* Endereço */}
+  {
+    hasAddress && (
+      <div>
+        <p class="heading-label-on-light mb-2">Endereço</p>
+        <div class="inline-flex items-start gap-4 p-4 bg-card rounded-xl border border-border w-full">
+          <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shrink-0 mt-0.5">
+            <MapPin class="w-5 h-5 text-primary-foreground" />
+          </div>
+          <div class="caption-text text-foreground font-medium">
+            {address.street && (
+              <p>
+                {address.street}
+                {address.complement && `, ${address.complement}`}
+              </p>
+            )}
+            {(address.neighborhood || address.cityState) && (
+              <p>{[address.neighborhood, address.cityState].filter(Boolean).join(" — ")}</p>
+            )}
+            {address.zipCode && <p class="text-muted-foreground">{address.zipCode}</p>}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  {/* E-mails — todos em um único card */}
+  {
+    emails.length > 0 && (
+      <div>
+        <p class="heading-label-on-light mb-2">E-mail</p>
+        <div class="bg-card rounded-xl border border-border overflow-hidden">
+          {emails.map((item, i) => (
+            <div class:list={["flex items-center gap-4 p-4", i > 0 && "border-t border-border"]}>
+              <div class="w-10 h-10 rounded-lg bg-accent flex items-center justify-center shrink-0">
+                <Mail class="w-5 h-5 text-white" />
+              </div>
+              <div class="min-w-0">
+                {item.label && <p class="caption-text text-xs uppercase tracking-wide font-medium">{item.label}</p>}
+                <a
+                  href={`mailto:${item.address}`}
+                  class="caption-text font-medium text-foreground hover:text-accent transition-colors break-all"
+                >
+                  {item.address}
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  {/* Telefones */}
+  {
+    phones.length > 0 && (
+      <div>
+        <p class="heading-label-on-light mb-2">Telefones</p>
+        <ul class="flex flex-wrap gap-3">
+          {phones.map((item, i) => {
+            const usesPrimaryBg = i % 2 === 0;
+            return (
+              <li class="flex flex-1 min-w-50 items-center gap-4 p-4 bg-card rounded-xl border border-border">
+                <div
+                  class:list={[
+                    "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
+                    usesPrimaryBg ? "bg-primary" : "bg-accent",
+                  ]}
+                >
+                  {item.isWhatsApp ? (
+                    <WhatsAppIcon className="w-5 h-5 text-white" />
+                  ) : (
+                    <Phone class="w-5 h-5 text-white" />
+                  )}
+                </div>
+                <div class="min-w-0">
+                  {item.label && <p class="caption-text text-xs uppercase tracking-wide font-medium">{item.label}</p>}
+                  <a
+                    href={item.isWhatsApp ? `https://wa.me/${item.number?.replace(/\D/g, "")}` : `tel:${item.number}`}
+                    target={item.isWhatsApp ? "_blank" : undefined}
+                    rel={item.isWhatsApp ? "noopener noreferrer" : undefined}
+                    class:list={[
+                      "caption-text font-medium transition-colors",
+                      usesPrimaryBg ? "text-foreground hover:text-primary" : "text-foreground hover:text-accent",
+                    ]}
+                  >
+                    {item.number}
+                  </a>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    )
+  }
+
+  {/* Redes Sociais */}
+  {
+    socialLinks.length > 0 && (
+      <div>
+        <p class="heading-label-on-light mb-2">Redes Sociais</p>
+        <SocialLinks
+          client:visible
+          socialLinks={socialLinks}
+          linkClassName="size-12 bg-primary hover:bg-accent"
+          iconClassName="size-6"
+        />
+      </div>
+    )
+  }
+</div>
