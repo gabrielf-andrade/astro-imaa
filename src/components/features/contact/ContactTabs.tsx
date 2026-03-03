@@ -1,11 +1,12 @@
 import ContactForm from "@/components/features/contact/ContactForm";
-import EnrollmentForm, { type SanityFormField } from "@/components/features/contact/EnrollmentForm";
+import EnrollmentForm from "@/components/features/contact/EnrollmentForm";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { SanityFormField } from "@/lib/utils/form-utils";
 import { cn } from "@/lib/utils/ui-utils";
 import { MessageSquare, Music } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 
 interface ContactTabsProps {
@@ -78,54 +79,54 @@ export default function ContactTabs({
         </TabsList>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
-      <AnimatePresence>
-        <TabsContent value="contact" forceMount className={active === "contact" ? "block" : "hidden"}>
+      <TabsContent value="contact" forceMount className={active === "contact" ? "block" : "hidden"}>
+        <motion.div
+          key="contact"
+          animate={{ opacity: active === "contact" ? 1 : 0, y: active === "contact" ? 0 : 6 }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
+        >
+          <Card>
+            {(contactFormHeading || contactFormDescription) && (
+              <CardHeader>
+                {contactFormHeading && <h2 className="heading-3">{contactFormHeading}</h2>}
+                {contactFormDescription && <p className="body-text">{contactFormDescription}</p>}
+              </CardHeader>
+            )}
+            <CardContent className={cn(contactFormHeading || contactFormDescription ? "pt-0" : "pt-6")}>
+              <ContactForm />
+            </CardContent>
+          </Card>
+        </motion.div>
+      </TabsContent>
+
+      {enrollmentActive && (
+        <TabsContent value="enrollment" forceMount className={active === "enrollment" ? "block" : "hidden"}>
           <motion.div
-            animate={{ opacity: active === "contact" ? 1 : 0, y: active === "contact" ? 0 : 6 }}
+            key="enrollment"
+            animate={{ opacity: active === "enrollment" ? 1 : 0, y: active === "enrollment" ? 0 : 6 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
           >
             <Card>
-              {(contactFormHeading || contactFormDescription) && (
+              {(enrollmentFormHeading || enrollmentFormDescription) && (
                 <CardHeader>
-                  {contactFormHeading && <h2 className="heading-3">{contactFormHeading}</h2>}
-                  {contactFormDescription && <p className="body-text">{contactFormDescription}</p>}
+                  {enrollmentFormHeading && <h2 className="heading-3">{enrollmentFormHeading}</h2>}
+                  {enrollmentFormDescription && (
+                    <div className="p-4 bg-accent/10 border border-accent/25 rounded-xl">
+                      <p className="font-sans text-sm font-medium text-foreground/90 flex items-start gap-3 leading-relaxed">
+                        <Music className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                        {enrollmentFormDescription}
+                      </p>
+                    </div>
+                  )}
                 </CardHeader>
               )}
-              <CardContent className={cn(contactFormHeading || contactFormDescription ? "pt-0" : "pt-6")}>
-                <ContactForm />
+              <CardContent className={cn(enrollmentFormHeading || enrollmentFormDescription ? "pt-0" : "pt-6")}>
+                <EnrollmentForm fields={enrollmentFormFields} />
               </CardContent>
             </Card>
           </motion.div>
         </TabsContent>
-
-        {enrollmentActive && (
-          <TabsContent value="enrollment" forceMount className={active === "enrollment" ? "block" : "hidden"}>
-            <motion.div
-              animate={{ opacity: active === "enrollment" ? 1 : 0, y: active === "enrollment" ? 0 : 6 }}
-              transition={{ duration: 0.15, ease: "easeOut" }}
-            >
-              <Card>
-                {(enrollmentFormHeading || enrollmentFormDescription) && (
-                  <CardHeader>
-                    {enrollmentFormHeading && <h2 className="heading-3">{enrollmentFormHeading}</h2>}
-                    {enrollmentFormDescription && (
-                      <div className="p-4 bg-accent/10 border border-accent/25 rounded-xl">
-                        <p className="font-sans text-sm font-medium text-foreground/90 flex items-start gap-3 leading-relaxed">
-                          <Music className="w-5 h-5 text-accent shrink-0 mt-0.5" />
-                          {enrollmentFormDescription}
-                        </p>
-                      </div>
-                    )}
-                  </CardHeader>
-                )}
-                <CardContent className={cn(enrollmentFormHeading || enrollmentFormDescription ? "pt-0" : "pt-6")}>
-                  <EnrollmentForm fields={enrollmentFormFields} />
-                </CardContent>
-              </Card>
-            </motion.div>
-          </TabsContent>
-        )}
-      </AnimatePresence>
+      )}
     </Tabs>
   );
 }
