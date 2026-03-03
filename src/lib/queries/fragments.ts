@@ -111,7 +111,7 @@ export const PAGE_BUILDER_FRAGMENT = `
     ...,
     "images": images[] { ${IMAGE_FRAGMENT} },
     autoplay,
-    autoplayInterval
+    "autoplayInterval": coalesce(autoplayInterval, 4)
   },
   _type == "videoFile" => { ${VIDEO_FILE_FRAGMENT} },
   _type == "youtubeEmbed" => { ${YOUTUBE_EMBED_FRAGMENT} },

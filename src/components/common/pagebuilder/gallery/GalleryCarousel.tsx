@@ -1,4 +1,3 @@
-import { GalleryItem, type GalleryImage } from "@/components/common/pagebuilder/gallery/GalleryItem";
 import {
   Carousel,
   CarouselContent,
@@ -9,15 +8,17 @@ import {
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { ValidGalleryImage } from "./GalleryItem";
+import { GalleryItem } from "./GalleryItem";
 
 interface Props {
-  images: GalleryImage[];
+  images: ValidGalleryImage[];
   onOpen: (index: number) => void;
-  autoplay?: boolean;
+  autoplay?: boolean | null;
   autoplayInterval?: number;
 }
 
-export function GalleryCarousel({ images, onOpen, autoplay = false, autoplayInterval = 5 }: Readonly<Props>) {
+export function GalleryCarousel({ images, onOpen, autoplay = false, autoplayInterval = 4 }: Readonly<Props>) {
   const [api, setApi] = useState<CarouselApi>();
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
   const [selectedSnap, setSelectedSnap] = useState(0);
@@ -54,7 +55,7 @@ export function GalleryCarousel({ images, onOpen, autoplay = false, autoplayInte
     <Carousel setApi={setApi} opts={{ align: "start", loop: true }} plugins={plugins} className="w-full">
       <CarouselContent className="-ml-4">
         {images.map((image, i) => (
-          <CarouselItem key={image.asset!._id} className="pl-4 basis-[80%] sm:basis-1/2 lg:basis-1/3">
+          <CarouselItem key={image.asset._id} className="pl-4 basis-[80%] sm:basis-1/2 lg:basis-1/3">
             <div className="aspect-4/3">
               <GalleryItem image={image} index={i} onClick={onOpen} className="w-full h-full" />
             </div>
@@ -62,7 +63,6 @@ export function GalleryCarousel({ images, onOpen, autoplay = false, autoplayInte
         ))}
       </CarouselContent>
 
-      {/* Controls: prev/next bottom-left, dots bottom-right */}
       <div className="flex items-center justify-between mt-6">
         <div className="flex items-center gap-2">
           <CarouselPrevious className="static translate-y-0" />

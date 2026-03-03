@@ -11,17 +11,17 @@ import "yet-another-react-lightbox/styles.css";
 import { GalleryCarousel } from "./GalleryCarousel";
 import { GalleryGrid2 } from "./GalleryGrid2";
 import { GalleryGrid3 } from "./GalleryGrid3";
-import type { GalleryImage } from "./GalleryItem";
+import { isValidImage, type ValidGalleryImage } from "./GalleryItem";
 import { GalleryMasonry } from "./GalleryMasonry";
 
 type Props = PageBuilderBlockOf<"gallery">;
 
-function buildSlides(images: GalleryImage[]) {
+function buildSlides(images: ValidGalleryImage[]) {
   return images.map((img) => ({
-    src: img.asset!.url!,
+    src: img.asset.url,
     alt: img.alt ?? "",
-    width: img.asset?.metadata?.dimensions?.width ?? 1200,
-    height: img.asset?.metadata?.dimensions?.height ?? 800,
+    width: img.asset.metadata?.dimensions?.width ?? 1200,
+    height: img.asset.metadata?.dimensions?.height ?? 800,
     description: img.caption ?? undefined,
   }));
 }
@@ -29,7 +29,7 @@ function buildSlides(images: GalleryImage[]) {
 export default function Gallery({ heading, images, layout = "grid3", autoplay, autoplayInterval }: Readonly<Props>) {
   const [lightboxIndex, setLightboxIndex] = useState(-1);
 
-  const validImages = useMemo(() => (images ?? []).filter((img) => img.asset?._id && img.asset?.url), [images]);
+  const validImages = useMemo(() => (images ?? []).filter(isValidImage), [images]);
 
   const slides = useMemo(() => buildSlides(validImages), [validImages]);
 
@@ -50,8 +50,8 @@ export default function Gallery({ heading, images, layout = "grid3", autoplay, a
           <GalleryCarousel
             images={validImages}
             onOpen={setLightboxIndex}
-            autoplay={autoplay ?? undefined}
-            autoplayInterval={autoplayInterval ?? undefined}
+            autoplay={autoplay}
+            autoplayInterval={autoplayInterval}
           />
         )}
       </div>

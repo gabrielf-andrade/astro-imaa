@@ -3,7 +3,13 @@ import type { PageBuilderBlockOf } from "@/lib/sanity-derived-types";
 
 type GalleryImage = NonNullable<PageBuilderBlockOf<"gallery">["images"]>[number];
 
-export type { GalleryImage };
+export type ValidGalleryImage = GalleryImage & {
+  asset: NonNullable<GalleryImage["asset"]> & { url: string };
+};
+
+export function isValidImage(img: GalleryImage): img is ValidGalleryImage {
+  return !!(img.asset?._id && img.asset?.url);
+}
 
 export function GalleryItem({
   image,
@@ -11,15 +17,13 @@ export function GalleryItem({
   onClick,
   className,
 }: Readonly<{
-  image: GalleryImage;
+  image: ValidGalleryImage;
   index: number;
   onClick: (i: number) => void;
   className?: string;
 }>) {
-  if (!image.asset?._id) return null;
   return (
     <button
-      type="button"
       className={`group relative overflow-hidden rounded-xl cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${className ?? ""}`}
       onClick={() => onClick(index)}
       aria-label={image.alt ?? `Imagem ${index + 1}`}
