@@ -7,3 +7,10 @@ compatibility_flags = [
 ]
 
 pages_build_output_dir = "./dist"
+
+[vars]
+PUBLIC_SANITY_PROJECT_ID = "ofh08t2n"
+PUBLIC_SANITY_DATASET = "production"
+PUBLIC_SANITY_VISUAL_EDITING_ENABLED= "false"
+PUBLIC_TURNSTILE_SITE_KEY = "0x4AAAAAAClXNSX8bLBmF-Ad"
+"
