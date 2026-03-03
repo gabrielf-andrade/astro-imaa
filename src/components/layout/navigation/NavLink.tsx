@@ -1,4 +1,4 @@
-import { linkClass } from "@/lib/utils/navbar-utils";
+import { linkClass, linkContentUnderlineClass } from "@/lib/utils/navbar-utils";
 import { cn } from "@/lib/utils/ui-utils";
 
 interface Props {
@@ -11,11 +11,17 @@ export default function NavLink({ href, label, active }: Readonly<Props>) {
   return (
     <a
       href={href}
-      className={cn(linkClass, active ? "after:hidden" : "after:scale-x-0 hover:after:scale-x-100")}
+      className={cn(linkClass, "group")}
       aria-current={active ? "page" : undefined}
     >
-      {label}
-      {active && <span className="absolute bottom-0 left-0 h-0.5 w-full gradient-colors rounded-sm" />}
+      <span
+        className={cn(
+          linkContentUnderlineClass,
+          active ? "after:scale-x-100" : "after:scale-x-0 group-hover:after:scale-x-100",
+        )}
+      >
+        {label}
+      </span>
     </a>
   );
 }

@@ -5,7 +5,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { QueryMenuItem } from "@/lib/sanity-derived-types";
-import { isActiveLink, linkClass } from "@/lib/utils/navbar-utils";
+import { isActiveLink, linkClass, linkContentUnderlineClass } from "@/lib/utils/navbar-utils";
 import { buildUrlFromSlug } from "@/lib/utils/string-utils";
 import { cn } from "@/lib/utils/ui-utils";
 import { ChevronDown } from "lucide-react";
@@ -29,14 +29,20 @@ export default function DesktopDropdown({ item, currentPath }: Readonly<Props>) 
       <DropdownMenuTrigger
         className={cn(
           linkClass,
-          "flex items-center gap-1 outline-none",
-          showUnderline ? "after:scale-x-100" : "after:scale-x-0 hover:after:scale-x-100",
+          "group outline-none",
         )}
       >
-        {item.label}
-        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown className="w-3.5 h-3.5" />
-        </motion.span>
+        <span
+          className={cn(
+            linkContentUnderlineClass,
+            showUnderline ? "after:scale-x-100" : "after:scale-x-0 group-hover:after:scale-x-100",
+          )}
+        >
+          {item.label}
+          <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <ChevronDown className="w-3.5 h-3.5" />
+          </motion.span>
+        </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="min-w-44">
         {item.submenu?.map((child) => {
