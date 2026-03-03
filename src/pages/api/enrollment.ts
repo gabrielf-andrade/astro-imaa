@@ -1,6 +1,7 @@
 export const prerender = false;
 
 import { sendEnrollmentEmail } from "@/lib/email";
+import { verifyTurnstile } from "@/lib/utils/form-utils";
 import type { APIRoute } from "astro";
 import { z } from "zod";
 
@@ -36,16 +37,22 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const parsedData = dynamicFormSchema.parse(raw);
-
     if (parsedData._honey) {
       return new Response(JSON.stringify({ success: true }), { status: 200 });
     }
 
-    const { _honey, _fieldLabels, ...fields } = parsedData;
+    const isHuman = await verifyTurnstile(parsedData._turnstile ?? "");
+    if (!isHuman) {
+      return new Response(JSON.stringify({ success: false, error: "Verificação de segurança falhou." }), {
+        status: 400,
+      });
+    }
+
+    const { _honey, _fieldLabels, _turnstile, ...fields } = parsedData;
 
     let fieldLabels: Record<string, string> = {};
     try {
-      // Usando a variável trimada (Fix do CodeRabbit)
+      // Usando a variável trimada
       const trimmedLabels = _fieldLabels?.trim();
       if (trimmedLabels) {
         const parsedJson = JSON.parse(trimmedLabels);

@@ -1,15 +1,16 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircleIcon, CheckCircle, Send } from "lucide-react";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { z } from "zod/v3";
-
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { SUBMIT_ERROR_MESSAGE } from "@/lib/constants";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
+import { Turnstile } from "@marsidev/react-turnstile";
+import { AlertCircleIcon, CheckCircle, Send } from "lucide-react";
+import { useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod/v3";
 
 const ContactSchema = z.object({
   name: z.string().min(2, "Informe seu nome completo"),
@@ -25,6 +26,8 @@ export default function ContactForm() {
   const [success, setSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const form = useForm<ContactValues>({
     resolver: zodResolver(ContactSchema),
@@ -32,10 +35,17 @@ export default function ContactForm() {
   });
 
   async function onSubmit(values: ContactValues) {
+    if (!turnstileToken) {
+      setSubmitError("Por favor, confirme que você não é um robô.");
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitError(null);
 
     const formData = new FormData();
+    formData.append("_turnstile", turnstileToken);
+
     Object.entries(values).forEach(([key, value]) => {
       if (value !== undefined) formData.append(key, value);
     });
@@ -56,6 +66,8 @@ export default function ContactForm() {
       }
     } catch {
       setSubmitError(SUBMIT_ERROR_MESSAGE);
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
     } finally {
       setIsSubmitting(false);
     }
@@ -158,7 +170,19 @@ export default function ContactForm() {
             <AlertDescription>{submitError}</AlertDescription>
           </Alert>
         )}
-        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+
+        <Turnstile
+          ref={turnstileRef}
+          siteKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY}
+          onSuccess={setTurnstileToken}
+          onExpire={() => setTurnstileToken(null)}
+          onError={() => {
+            setTurnstileToken(null);
+            turnstileRef.current?.reset();
+          }}
+          options={{ language: "pt-br" }}
+        />
+        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting || !turnstileToken}>
           <Send className="w-4 h-4" />
           {isSubmitting ? "Enviando..." : "Enviar Mensagem"}
         </Button>
