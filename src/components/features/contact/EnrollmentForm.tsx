@@ -8,21 +8,30 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { AlertCircleIcon, CheckCircle, Music } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod/v3";
 import { DynamicField } from "./DynamicField";
 
 interface EnrollmentFormProps {
   fields: SanityFormField[];
+  isActive: boolean;
 }
 
-export default function EnrollmentForm({ fields }: Readonly<EnrollmentFormProps>) {
+export default function EnrollmentForm({ fields, isActive }: Readonly<EnrollmentFormProps>) {
   const [success, setSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const turnstileRef = useRef<TurnstileInstance>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [shouldRenderTurnstile, setShouldRenderTurnstile] = useState(false);
+
+  // Só permite criar o widget quando ficar ativo pela primeira vez
+  useEffect(() => {
+    if (isActive && !shouldRenderTurnstile) {
+      setShouldRenderTurnstile(true);
+    }
+  }, [isActive, shouldRenderTurnstile]);
 
   const schema = useMemo(() => buildFormSchema(fields), [fields]);
   type FormValues = z.infer<typeof schema>;
@@ -151,17 +160,21 @@ export default function EnrollmentForm({ fields }: Readonly<EnrollmentFormProps>
           </Alert>
         )}
 
-        <Turnstile
-          ref={turnstileRef}
-          siteKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY}
-          onSuccess={setTurnstileToken}
-          onExpire={() => setTurnstileToken(null)}
-          onError={() => {
-            setTurnstileToken(null);
-            turnstileRef.current?.reset();
-          }}
-          options={{ language: "pt-br" }}
-        />
+        {shouldRenderTurnstile && (
+          <div style={{ display: isActive ? "block" : "none" }}>
+            <Turnstile
+              ref={turnstileRef}
+              siteKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY}
+              onSuccess={setTurnstileToken}
+              onExpire={() => setTurnstileToken(null)}
+              onError={() => {
+                setTurnstileToken(null);
+                turnstileRef.current?.reset();
+              }}
+              options={{ language: "pt-br" }}
+            />
+          </div>
+        )}
 
         <Button
           type="submit"

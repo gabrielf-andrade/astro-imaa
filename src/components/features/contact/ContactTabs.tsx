@@ -93,7 +93,7 @@ export default function ContactTabs({
               </CardHeader>
             )}
             <CardContent className={cn(contactFormHeading || contactFormDescription ? "pt-0" : "pt-6")}>
-              <ContactForm />
+              <ContactForm isActive={active === "contact"} />
             </CardContent>
           </Card>
         </motion.div>
@@ -121,7 +121,7 @@ export default function ContactTabs({
                 </CardHeader>
               )}
               <CardContent className={cn(enrollmentFormHeading || enrollmentFormDescription ? "pt-0" : "pt-6")}>
-                <EnrollmentForm fields={enrollmentFormFields} />
+                <EnrollmentForm fields={enrollmentFormFields} isActive={active === "enrollment"} />
               </CardContent>
             </Card>
           </motion.div>

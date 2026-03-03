@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { AlertCircleIcon, CheckCircle, Send } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod/v3";
 
@@ -22,17 +22,29 @@ const ContactSchema = z.object({
 
 type ContactValues = z.infer<typeof ContactSchema>;
 
-export default function ContactForm() {
+interface ContactFormProps {
+  isActive: boolean;
+}
+
+export default function ContactForm({ isActive }: Readonly<ContactFormProps>) {
   const [success, setSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const turnstileRef = useRef<TurnstileInstance>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [shouldRenderTurnstile, setShouldRenderTurnstile] = useState(false);
 
   const form = useForm<ContactValues>({
     resolver: zodResolver(ContactSchema),
     defaultValues: { name: "", email: "", subject: "", message: "", _honey: "" },
   });
+
+  // Só permite criar o widget quando ficar ativo pela primeira vez
+  useEffect(() => {
+    if (isActive && !shouldRenderTurnstile) {
+      setShouldRenderTurnstile(true);
+    }
+  }, [isActive, shouldRenderTurnstile]);
 
   async function onSubmit(values: ContactValues) {
     if (!turnstileToken) {
@@ -171,17 +183,21 @@ export default function ContactForm() {
           </Alert>
         )}
 
-        <Turnstile
-          ref={turnstileRef}
-          siteKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY}
-          onSuccess={setTurnstileToken}
-          onExpire={() => setTurnstileToken(null)}
-          onError={() => {
-            setTurnstileToken(null);
-            turnstileRef.current?.reset();
-          }}
-          options={{ language: "pt-br" }}
-        />
+        {shouldRenderTurnstile && (
+          <div style={{ display: isActive ? "block" : "none" }}>
+            <Turnstile
+              ref={turnstileRef}
+              siteKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY}
+              onSuccess={setTurnstileToken}
+              onExpire={() => setTurnstileToken(null)}
+              onError={() => {
+                setTurnstileToken(null);
+                turnstileRef.current?.reset();
+              }}
+              options={{ language: "pt-br" }}
+            />
+          </div>
+        )}
         <Button type="submit" size="lg" className="w-full" disabled={isSubmitting || !turnstileToken}>
           <Send className="w-4 h-4" />
           {isSubmitting ? "Enviando..." : "Enviar Mensagem"}
