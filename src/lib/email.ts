@@ -40,7 +40,7 @@ export async function sendContactEmail(data: ContactEmailData) {
       <h2 style="font-family:sans-serif;color:#1a1a1a;">Novo contato pelo site</h2>
       <table style="font-family:sans-serif;font-size:14px;border-collapse:collapse;width:100%;">
         <tr><td style="padding:8px;font-weight:bold;width:120px;">Nome</td><td style="padding:8px;">${escapeHtml(data.name)}</td></tr>
-        <tr><td style="padding:8px;font-weight:bold;">E-mail</td><td style="padding:8px;"><a href="mailto:${escapeHtml(data.email)}">${escapeHtml(data.email)}</a></td></tr>
+        <tr><td style="padding:8px;font-weight:bold;">E-mail</td><td style="padding:8px;">${escapeHtml(data.email)}</td></tr>
         <tr><td style="padding:8px;font-weight:bold;">Assunto</td><td style="padding:8px;">${escapeHtml(data.subject)}</td></tr>
       </table>
       <hr style="margin:16px 0;border:none;border-top:1px solid #e5e5e5;" />
