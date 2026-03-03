@@ -11,17 +11,15 @@ export function isValidImage(img: GalleryImage): img is ValidGalleryImage {
   return !!(img.asset?._id && img.asset?.url);
 }
 
-export function GalleryItem({
-  image,
-  index,
-  onClick,
-  className,
-}: Readonly<{
+interface GalleryItemProps {
   image: ValidGalleryImage;
   index: number;
   onClick: (i: number) => void;
   className?: string;
-}>) {
+  loading?: "lazy" | "eager";
+}
+
+export function GalleryItem({ image, index, onClick, className, loading = "lazy" }: Readonly<GalleryItemProps>) {
   return (
     <button
       className={`group relative overflow-hidden rounded-xl cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${className ?? ""}`}
@@ -32,6 +30,7 @@ export function GalleryItem({
         image={image}
         width={600}
         height={600}
+        loading={loading}
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
       />

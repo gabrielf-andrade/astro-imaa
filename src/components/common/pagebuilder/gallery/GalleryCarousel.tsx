@@ -11,14 +11,19 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { ValidGalleryImage } from "./GalleryItem";
 import { GalleryItem } from "./GalleryItem";
 
-interface Props {
+interface GalleryCarouselProps {
   images: ValidGalleryImage[];
   onOpen: (index: number) => void;
   autoplay?: boolean | null;
   autoplayInterval?: number;
 }
 
-export function GalleryCarousel({ images, onOpen, autoplay = false, autoplayInterval = 4 }: Readonly<Props>) {
+export function GalleryCarousel({
+  images,
+  onOpen,
+  autoplay = false,
+  autoplayInterval = 4,
+}: Readonly<GalleryCarouselProps>) {
   const [api, setApi] = useState<CarouselApi>();
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
   const [selectedSnap, setSelectedSnap] = useState(0);
@@ -57,7 +62,7 @@ export function GalleryCarousel({ images, onOpen, autoplay = false, autoplayInte
         {images.map((image, i) => (
           <CarouselItem key={image.asset._id} className="pl-4 basis-[80%] sm:basis-1/2 lg:basis-1/3">
             <div className="aspect-4/3">
-              <GalleryItem image={image} index={i} onClick={onOpen} className="w-full h-full" />
+              <GalleryItem image={image} index={i} onClick={onOpen} className="w-full h-full" loading="eager" />
             </div>
           </CarouselItem>
         ))}
