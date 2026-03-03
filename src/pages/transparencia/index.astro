@@ -26,6 +26,12 @@ const validSections = (sections ?? []).filter((s) => s.slug);
 
   <PageSection py="md" class="pt-0">
     <Container size="lg">
+      <div class="space-y-2 mb-4">
+        <p class="heading-label-on-light">ACESSO À INFORMAÇÃO</p>
+        <h3 class="heading-2">Nossos parceiros institucionais</h3>
+        <p class="body-text text-pretty">Selecione a área desejada:</p>
+      </div>
+
       {
         validSections.length > 0 ? (
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
