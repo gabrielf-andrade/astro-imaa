@@ -72,6 +72,11 @@ export type QuerySocialLink = NonNullable<NonNullable<SITE_SETTINGS_QUERY_RESULT
 /** Available social platforms */
 export type SocialMediaPlatforms = NonNullable<QuerySocialLink["platform"]>;
 
+/** Social link with optional cover image (used in SocialGrid on home page) */
+export type QuerySocialLinkWithImage = QuerySocialLink & {
+  image?: SanityImageBase | null;
+};
+
 /** Contact info from site settings */
 export type QueryContactInfo = NonNullable<SITE_SETTINGS_QUERY_RESULT>["contactInfo"];
 

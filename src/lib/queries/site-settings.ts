@@ -19,7 +19,10 @@ export const SITE_SETTINGS_QUERY = defineQuery(`
     "socialLinks": coalesce(socialLinks[] {
       platform,
       url,
-      label
+      label,
+      "image": image {
+        ${IMAGE_FRAGMENT}
+      }
     }, []),
     "contactInfo": coalesce(contactInfo {
       address,

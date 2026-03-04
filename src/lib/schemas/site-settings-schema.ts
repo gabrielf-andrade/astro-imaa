@@ -68,6 +68,7 @@ const socialLinkSchema = z.object({
   platform: z.string().nullable(),
   url: z.union([z.literal(""), z.string().url()]).nullable(),
   label: z.string().nullable(),
+  image: imageSchema.nullable().optional(),
 });
 
 const addressSchema = z.object({
