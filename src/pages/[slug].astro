@@ -2,6 +2,7 @@
 import PageBuilder from "@/components/common/pagebuilder/PageBuilder.astro";
 import FeaturedImage from "@/components/sections/FeaturedImage.astro";
 import PageHero from "@/components/sections/PageHero.astro";
+import UnderConstruction from "@/components/sections/UnderConstruction.astro";
 import Layout from "@/layouts/Layout.astro";
 import { DEFAULT_TITLE } from "@/lib/constants";
 import { loadQuery } from "@/lib/load-query";
@@ -23,10 +24,19 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
+const { slug } = Astro.params;
 ---
 
 <Layout title={page.title ?? DEFAULT_TITLE} description={page.excerpt ?? ""} image={page.featuredImage}>
   <PageHero heading={page.hero?.heading ?? page.title ?? DEFAULT_TITLE} tagline={page.hero?.tagline} />
-  <FeaturedImage image={page.featuredImage} />
-  <PageBuilder pageBuilder={page.pageBuilder} />
+  {
+    slug.includes("projetos") || slug.includes("galeria") ? (
+      <UnderConstruction />
+    ) : (
+      <>
+        <FeaturedImage image={page.featuredImage} />
+        <PageBuilder pageBuilder={page.pageBuilder} />
+      </>
+    )
+  }
 </Layout>

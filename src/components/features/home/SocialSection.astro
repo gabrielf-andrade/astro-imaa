@@ -1,0 +1,33 @@
+---
+import SocialGrid from "@/components/features/home/SocialGrid";
+import Container from "@/components/layout/Container.astro";
+import PageSection from "@/components/layout/PageSection.astro";
+import type { QuerySocialLink } from "@/lib/sanity-derived-types";
+
+interface Props {
+  socialLinks: QuerySocialLink[];
+}
+
+const { socialLinks } = Astro.props;
+
+const validLinks = socialLinks.filter((s) => s.url && s.platform);
+const hasLinks = validLinks.length > 0;
+---
+
+{
+  hasLinks && (
+    <PageSection py="lg" bg="muted">
+      <Container size="lg">
+        <div class="text-center mb-12">
+          <p class="heading-label-on-light">Acompanhe</p>
+          <h2 class="heading-2 mt-3 mb-4">Siga nossas redes sociais</h2>
+          <p class="body-text max-w-md mx-auto text-pretty">
+            Fique por dentro de tudo que acontece no Instituto e no Bloco Chora Bananeira.
+          </p>
+        </div>
+
+        <SocialGrid client:visible socialLinks={validLinks} />
+      </Container>
+    </PageSection>
+  )
+}
