@@ -1,6 +1,6 @@
 import escapeHtml from "escape-html";
 import { Resend } from "resend";
-import { LOGO_BASE64 } from "./email-logo.generated";
+import { LOGO_BASE64 } from "./server/email-logo.generated";
 
 const RESEND_API_KEY = import.meta.env.RESEND_API_KEY;
 const FROM_EMAIL = import.meta.env.FROM_EMAIL;
@@ -29,7 +29,7 @@ function getResendClient(): Resend {
 function formatValue(value: string): string {
   if (value === "true") return "✅ Sim";
   if (value === "false") return "❌ Não";
-  return escapeHtml(value) || "—";
+  return value || "—";
 }
 
 // ─── Layout base do e-mail ────────────────────────────────────────────────────────
@@ -92,17 +92,19 @@ function buildEmailWrapper(content: string): string {
 // ─── Linha de campo (tabela de dados) ────────────────────────────────────────────
 function buildFieldRow(label: string, value: string, isLast = false): string {
   const borderBottom = isLast ? "none" : `1px solid ${COLORS.border}`;
+  const safeLabel = escapeHtml(label);
+  const safeValue = escapeHtml(value);
   return `
   <tr>
     <td style="padding:10px 12px;width:130px;vertical-align:top;font-size:13px;
       font-weight:700;color:${COLORS.primary};background:${COLORS.cream};
       border-bottom:${borderBottom};">
-      ${label}
+      ${safeLabel}
     </td>
     <td style="padding:10px 12px;vertical-align:top;font-size:14px;
       color:${COLORS.textDark};background:${COLORS.white};
       border-bottom:${borderBottom};">
-      ${value}
+      ${safeValue}
     </td>
   </tr>`;
 }
@@ -131,9 +133,9 @@ export async function sendContactEmail(data: ContactEmailData) {
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
       style="border-radius:8px;overflow:hidden;border:1px solid ${COLORS.border};margin-bottom:24px;">
-      ${buildFieldRow("Nome", escapeHtml(data.name))}
-      ${buildFieldRow("E-mail", escapeHtml(data.email))}
-      ${buildFieldRow("Assunto", escapeHtml(data.subject), true)}
+      ${buildFieldRow("Nome", data.name)}
+      ${buildFieldRow("E-mail", data.email)}
+      ${buildFieldRow("Assunto", data.subject, true)}
     </table>
 
     <p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:1px;
@@ -159,9 +161,7 @@ export async function sendContactEmail(data: ContactEmailData) {
 export async function sendEnrollmentEmail({ fields, fieldLabels }: EnrollmentEmailData) {
   const entries = Object.entries(fields);
   const rows = entries
-    .map(([key, value], i) =>
-      buildFieldRow(escapeHtml(fieldLabels[key] ?? key), formatValue(value), i === entries.length - 1),
-    )
+    .map(([key, value], i) => buildFieldRow(fieldLabels[key] ?? key, formatValue(value), i === entries.length - 1))
     .join("");
 
   const content = `
@@ -178,7 +178,8 @@ export async function sendEnrollmentEmail({ fields, fieldLabels }: EnrollmentEma
   `;
 
   const emailField = Object.entries(fieldLabels).find(([, label]) => /e.?mail/i.test(label))?.[0];
-  const replyTo = emailField ? fields[emailField] : undefined;
+  const rawEmail = emailField ? fields[emailField] : undefined;
+  const replyTo = rawEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail) ? rawEmail : undefined;
 
   return getResendClient().emails.send({
     from: FROM_EMAIL,
