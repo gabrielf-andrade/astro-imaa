@@ -14,16 +14,16 @@ export function isValidImage(img: GalleryImage): img is ValidGalleryImage {
 interface GalleryItemProps {
   image: ValidGalleryImage;
   index: number;
-  onClick: (i: number) => void;
+  onItemClick: (i: number) => void;
   className?: string;
   loading?: "lazy" | "eager";
 }
 
-export function GalleryItem({ image, index, onClick, className, loading = "lazy" }: Readonly<GalleryItemProps>) {
+export function GalleryItem({ image, index, onItemClick, className, loading = "lazy" }: Readonly<GalleryItemProps>) {
   return (
     <button
       className={`group relative overflow-hidden rounded-xl cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${className ?? ""}`}
-      onClick={() => onClick(index)}
+      onClick={() => onItemClick(index)}
       aria-label={image.alt ?? `Imagem ${index + 1}`}
     >
       <SanityImage

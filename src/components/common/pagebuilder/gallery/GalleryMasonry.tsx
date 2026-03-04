@@ -28,7 +28,7 @@ export function GalleryMasonry({ images, onOpen }: Readonly<GalleryMasonryProps>
                 <GalleryItem
                   image={image}
                   index={globalIndex}
-                  onClick={onOpen}
+                  onItemClick={onOpen}
                   className="w-full h-full rounded-none!"
                 />
               </AspectRatio>

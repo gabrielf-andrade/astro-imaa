@@ -62,7 +62,7 @@ export function GalleryCarousel({
         {images.map((image, i) => (
           <CarouselItem key={image.asset._id} className="pl-4 basis-[80%] sm:basis-1/2 lg:basis-1/3">
             <div className="aspect-4/3">
-              <GalleryItem image={image} index={i} onClick={onOpen} className="w-full h-full" loading="eager" />
+              <GalleryItem image={image} index={i} onItemClick={onOpen} className="w-full h-full" loading="eager" />
             </div>
           </CarouselItem>
         ))}
@@ -77,7 +77,7 @@ export function GalleryCarousel({
         <div className="flex items-center gap-2">
           {scrollSnaps.map((_, i) => (
             <button
-              key={i}
+              key={"scroll-snap-" + i}
               onClick={() => api?.scrollTo(i)}
               aria-label={`Ir para slide ${i + 1}`}
               className={`h-2 rounded-full transition-all duration-300 ${
