@@ -1,4 +1,5 @@
 ---
+import BananeiraIcon from "@/components/icons/BananeiraIcon";
 import Container from "@/components/layout/Container.astro";
 import PageSection from "@/components/layout/PageSection.astro";
 import { cn } from "@/lib/utils/ui-utils";
@@ -15,9 +16,17 @@ const { heading, tagline, containerSize = "md", class: className } = Astro.props
 
 <PageSection class={cn("bg-background text-foreground pt-12 pb-0", className)}>
   <Container size={containerSize}>
-    <h1 class="heading-1 mb-3">{heading}</h1>
-    {tagline && <p class="body-text max-w-2xl text-pretty mb-3">{tagline}</p>}
-    <div class="h-1.5 w-20 rounded-sm bg-accent origin-left animate-accent-bar"></div>
+    <div>
+      <div>
+        <h1 class="heading-1 mb-3">
+          {heading}<span class="bananeira-icon inline-block mb-2 align-bottom ml-2" aria-hidden="true">
+            <BananeiraIcon className="h-6 md:h-8 w-auto" />
+          </span>
+        </h1>
+      </div>
+      {tagline && <p class="body-text max-w-2xl text-pretty mb-3">{tagline}</p>}
+      <div class="h-1.5 w-20 rounded-sm bg-accent origin-left animate-accent-bar"></div>
+    </div>
   </Container>
 </PageSection>
 
@@ -30,16 +39,42 @@ const { heading, tagline, containerSize = "md", class: className } = Astro.props
       transform: scaleX(1);
     }
   }
+
+  @keyframes sway {
+    0% {
+      transform: rotate(0deg);
+    }
+    20% {
+      transform: rotate(-2deg);
+    }
+    50% {
+      transform: rotate(2.5deg);
+    }
+    75% {
+      transform: rotate(-1.5deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+
   .animate-accent-bar {
     animation: accent-bar 0.3s ease-out forwards;
     animation-delay: 0.1s;
     transform: scaleX(0);
   }
 
+  .bananeira-icon {
+    transform-origin: center bottom;
+    animation: sway 1.2s ease-in-out forwards;
+    animation-delay: 0.3s;
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .animate-accent-bar {
+    .animate-accent-bar,
+    .bananeira-icon {
       animation: none;
-      transform: scaleX(1);
+      transform: none;
     }
   }
 </style>

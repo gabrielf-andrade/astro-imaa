@@ -34,7 +34,7 @@ export default function SocialGrid({ socialLinks, className }: Readonly<SocialGr
 
   return (
     <div className={cn("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6", className)}>
-      {validLinks.map((social) => {
+      {validLinks.map((social, index) => {
         const config = platformConfigs[social.platform as SocialMediaPlatforms];
         if (!config) return null;
 
@@ -52,6 +52,7 @@ export default function SocialGrid({ socialLinks, className }: Readonly<SocialGr
               "group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm",
               "transition-all duration-200 hover:shadow-lg",
               "hover:bg-(--platform-color) hover:border-(--platform-color)",
+              index % 2 === 0 ? "lg:-translate-y-4" : "lg:translate-y-4",
             )}
           >
             {/* Imagem */}
