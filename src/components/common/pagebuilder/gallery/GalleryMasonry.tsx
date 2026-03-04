@@ -30,6 +30,7 @@ export function GalleryMasonry({ images, onOpen }: Readonly<GalleryMasonryProps>
                   index={globalIndex}
                   onItemClick={onOpen}
                   className="w-full h-full rounded-none!"
+                  loading="eager"
                 />
               </AspectRatio>
             );
