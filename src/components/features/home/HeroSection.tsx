@@ -100,7 +100,7 @@ export default function HeroSection({
           {/* Texto */}
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="order-2 lg:order-1">
             <motion.h1 variants={itemVariants} className="mb-6 leading-tight">
-              <span className="block uppercase text-lg md:text-3xl font-sans font-semibold mb-3 text-pretty">
+              <span className="block uppercase text-lg md:text-3xl font-sans font-semibold mb-3 max-w-48 md:max-w-80">
                 <BlurRevealText
                   text={INSTITUTE_NAME}
                   className="bg-secondary bg-clip-text text-transparent"
