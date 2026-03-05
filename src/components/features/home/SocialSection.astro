@@ -1,4 +1,5 @@
 ---
+import AnimatedFadeUp from "@/components/features/home/AnimatedFadeUp";
 import SocialGrid from "@/components/features/home/SocialGrid";
 import Container from "@/components/layout/Container.astro";
 import PageSection from "@/components/layout/PageSection.astro";
@@ -17,13 +18,17 @@ const hasLinks = validLinks.length > 0;
 {
   hasLinks && (
     <PageSection py="lg" bg="muted">
-      <Container size="lg">
+      <Container size="lg" class="lg:py-12">
         <div class="text-center mb-12">
-          <p class="heading-label-on-light">Acompanhe</p>
-          <h2 class="heading-2 mt-3 mb-4">Siga nossas redes sociais</h2>
-          <p class="body-text max-w-md mx-auto text-pretty">
-            Fique por dentro de tudo que acontece no Instituto e no Bloco Chora Bananeira.
-          </p>
+          <AnimatedFadeUp client:visible delay={0.1}>
+            <p class="heading-label-on-light">Acompanhe</p>
+          </AnimatedFadeUp>
+          <AnimatedFadeUp client:visible delay={0.2}>
+            <h2 class="heading-2 mt-3 mb-4">Siga nossas redes sociais</h2>
+            <p class="body-text max-w-md mx-auto text-pretty">
+              Fique por dentro de tudo que acontece no Instituto e no Bloco Chora Bananeira.
+            </p>
+          </AnimatedFadeUp>
         </div>
 
         <SocialGrid client:visible socialLinks={validLinks} />
