@@ -91,7 +91,7 @@ export default function HeroSection({
         src={streamers.src}
         alt=""
         aria-hidden="true"
-        className="absolute top-0 left-0 z-0 w-full h-auto pointer-events-none blur-[1px] brightness-125"
+        className="absolute top-0 left-0 z-0 w-full h-auto pointer-events-none sm:blur-[1px] brightness-125"
       />
 
       {/* ── Hero ── */}

@@ -9,7 +9,7 @@ export default function BlockHighlightSection({ blockHighlight }: Readonly<Block
   if (!blockHighlight?.heading && !blockHighlight?.body) return null;
 
   return (
-    <div className="relative z-10 container mx-auto px-6 md:px-10 lg:px-16 max-w-7xl lg:pt-16 pb-16 md:pb-24">
+    <div className="relative z-10 container mx-auto px-6 md:px-10 lg:px-16 max-w-6xl lg:pt-16 pb-16 md:pb-24">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-10 lg:gap-24 items-center">
         <AnimatedFadeUp delay={0.1}>
           {blockHighlight.label && <p className="heading-label mb-5">{blockHighlight.label}</p>}
